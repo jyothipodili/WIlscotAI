@@ -28,6 +28,9 @@
     <!-- Allure Reporting -->
     <PackageReference Include="Allure.NUnit" Version="2.12.1" />
 
+    <!-- NUnit XML logger — emits NUnit format that the Jenkins nunit plugin can parse -->
+    <PackageReference Include="NUnitXml.TestLogger" Version="3.1.15" />
+
     <!-- Configuration -->
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />

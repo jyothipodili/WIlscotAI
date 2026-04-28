@@ -10,9 +10,10 @@ namespace WillscotAutomation.Hooks;
 
 // Lifecycle order: [BeforeTestRun] → [BeforeScenario] → test → [AfterScenario] → [AfterTestRun]
 [Binding]
-public sealed class Hooks(IObjectContainer container, ScenarioContext scenarioContext)
+public sealed partial class Hooks(IObjectContainer container, ScenarioContext scenarioContext)
 {
-    private static readonly Regex TcCodeRegex = new(@"\bTC-\d{3}\b", RegexOptions.IgnoreCase);
+    [GeneratedRegex(@"\bTC-\d{3}\b", RegexOptions.IgnoreCase)]
+    private static partial Regex TcCodeRegex();
 
     // ── Test Run ───────────────────────────────────────────────────────────────
 
@@ -118,6 +119,10 @@ public sealed class Hooks(IObjectContainer container, ScenarioContext scenarioCo
             // Attach a pass screenshot so every Allure result has a final page state image.
             try
             {
+                // Abort any pending font/CDN loads so Playwright's font-ready check
+                // doesn't hang indefinitely on slow external resources.
+                try { await playwrightContext.Page.EvaluateAsync("() => window.stop()"); } catch { }
+
                 var screenshot = await ScreenshotHelper.CaptureScreenshot(playwrightContext.Page);
                 AllureHelper.AttachScreenshot(screenshot, $"PASS — {scenarioContext.ScenarioInfo.Title}");
             }
@@ -184,7 +189,7 @@ public sealed class Hooks(IObjectContainer container, ScenarioContext scenarioCo
                 const string dir = "zephyr-attachments";
                 Directory.CreateDirectory(dir);
 
-                var tcMatch = TcCodeRegex.Match(title);
+                var tcMatch = TcCodeRegex().Match(title);
                 var fileName = tcMatch.Success
                     ? $"{tcMatch.Value.ToUpper()}.png"
                     : $"FAIL-{Guid.NewGuid():N}.png";

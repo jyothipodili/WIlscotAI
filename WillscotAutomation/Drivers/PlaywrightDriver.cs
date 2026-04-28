@@ -29,8 +29,7 @@ public static class PlaywrightDriver
         {
             //Headless = ConfigReader.Headless,
             Headless = false, // Force headless mode to avoid blank headed browsers on Windows
-            //SlowMo  = ConfigReader.SlowMo,
-            SlowMo = 200,
+            SlowMo  = ConfigReader.SlowMo,
             Args    = args
         };
 

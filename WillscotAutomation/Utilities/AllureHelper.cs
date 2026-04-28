@@ -74,7 +74,8 @@ public static class AllureHelper
     {
         var safeTitle = string.Concat(scenarioTitle.Split(Path.GetInvalidFileNameChars()));
 
-        // Screenshot
+        // Screenshot — stop pending resource loads first so font-ready check doesn't hang.
+        try { await page.EvaluateAsync("() => window.stop()"); } catch { }
         var screenshot = await ScreenshotHelper.CaptureScreenshot(page);
         AttachScreenshot(screenshot, $"FAIL — {safeTitle}");
 

@@ -47,4 +47,52 @@ public static class WaitHelper
 
         await page.WaitForTimeoutAsync(1500);
     }
+
+    // Retry an async operation up to `retries` extra times on any exception.
+    public static async Task<T> RetryAsync<T>(
+        Func<Task<T>> action, int retries = 2, int delayMs = 2_000)
+    {
+        Exception? last = null;
+        for (var attempt = 0; attempt <= retries; attempt++)
+        {
+            try { return await action(); }
+            catch (Exception ex)
+            {
+                last = ex;
+                if (attempt < retries)
+                    await Task.Delay(delayMs);
+            }
+        }
+        throw last!;
+    }
+
+    // GotoAsync with up to `retries` retries — handles transient navigation timeouts.
+    public static async Task NavigateWithRetryAsync(
+        IPage page, string url, PageGotoOptions? options = null, int retries = 2)
+    {
+        Exception? last = null;
+        for (var attempt = 0; attempt <= retries; attempt++)
+        {
+            try { await page.GotoAsync(url, options); return; }
+            catch (Exception ex)
+            {
+                last = ex;
+                if (attempt < retries)
+                    await page.WaitForTimeoutAsync(2_000);
+            }
+        }
+        throw last!;
+    }
+
+    // Three-pass scroll to trigger lazy-loaded images, then return to top.
+    public static async Task ScrollAndWaitForImagesAsync(IPage page, int pauseMs = 1_500)
+    {
+        await page.EvaluateAsync("window.scrollTo(0, document.body.scrollHeight / 3)");
+        await page.WaitForTimeoutAsync(pauseMs);
+        await page.EvaluateAsync("window.scrollTo(0, document.body.scrollHeight * 2 / 3)");
+        await page.WaitForTimeoutAsync(pauseMs);
+        await page.EvaluateAsync("window.scrollTo(0, document.body.scrollHeight)");
+        await page.WaitForTimeoutAsync(pauseMs);
+        await page.EvaluateAsync("window.scrollTo(0, 0)");
+    }
 }

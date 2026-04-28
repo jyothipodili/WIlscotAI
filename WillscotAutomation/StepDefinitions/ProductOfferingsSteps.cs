@@ -81,23 +81,31 @@ public sealed class ProductOfferingsSteps
     [Then(@"all product images should return HTTP 200")]
     public async Task ThenAllProductImagesShouldReturnHttp200()
     {
-        var images = await _homePage.ProductOfferings.AllProductImages.AllAsync();
-        var failed = new List<string>();
+        // Scroll first so lazy-loaded images are present in the DOM.
+        await WaitHelper.ScrollAndWaitForImagesAsync(_ctx.Page);
 
-        // Collect the first 10 candidate URLs up-front, then check them in parallel.
-        var candidates = new List<(string Absolute, string Src)>();
-        foreach (var imgLocator in images.Take(10))
-        {
-            var src = await imgLocator.GetAttributeAsync("src");
-            if (string.IsNullOrWhiteSpace(src)) continue;
-            if (src.StartsWith("data:", StringComparison.OrdinalIgnoreCase)) continue;
-            if (src.StartsWith("blob:", StringComparison.OrdinalIgnoreCase)) continue;
-            if (src.Contains("/_next/image", StringComparison.OrdinalIgnoreCase)) continue;
-            if (src.Contains("/icons/", StringComparison.OrdinalIgnoreCase)) continue;
-            var absoluteUrl = HttpHelper.ToAbsoluteUrl(src, ConfigReader.BaseUrl);
-            if (string.IsNullOrEmpty(absoluteUrl)) continue;
-            candidates.Add((absoluteUrl, src));
-        }
+        // Collect srcs via JS — avoids holding Playwright element handles across
+        // page reflows, which causes "Element is not attached to the DOM" errors.
+        var srcs = await _ctx.Page.EvaluateAsync<string[]>(@"() => {
+            const imgs = document.querySelectorAll(
+                ""[class*='product'] img, [class*='offering'] img, "" +
+                ""[class*='card'] img, [class*='tile'] img, [class*='item'] img"");
+            return Array.from(imgs)
+                .map(img => img.getAttribute('src') || '')
+                .filter(s => s &&
+                    !s.startsWith('data:') &&
+                    !s.startsWith('blob:') &&
+                    !s.includes('/_next/image') &&
+                    !s.includes('/icons/'));
+        }");
+
+        var candidates = srcs
+            .Take(10)
+            .Select(src => (Absolute: HttpHelper.ToAbsoluteUrl(src, ConfigReader.BaseUrl), Src: src))
+            .Where(c => !string.IsNullOrEmpty(c.Absolute))
+            .ToList();
+
+        var failed = new List<string>();
 
         var results = await Task.WhenAll(candidates.Select(async c =>
         {
@@ -113,15 +121,32 @@ public sealed class ProductOfferingsSteps
     [Then(@"all product images should be visible on the page")]
     public async Task ThenAllProductImagesShouldBeVisible()
     {
-        var images     = await _homePage.ProductOfferings.AllProductImages.AllAsync();
-        var invisible  = new List<string>();
+        // Three-pass scroll to fully trigger lazy loading.
+        await WaitHelper.ScrollAndWaitForImagesAsync(_ctx.Page);
 
-        foreach (var imgLocator in images)
+        // Retry up to 3 times — images may still be decoding after the scroll settles.
+        // Pure JS: no Playwright element handles held across reflows.
+        string[] invisible = [];
+        for (var attempt = 0; attempt < 3 && (attempt == 0 || invisible.Length > 0); attempt++)
         {
-            await WaitHelper.ScrollIntoView(imgLocator);
-            var src     = await imgLocator.GetAttributeAsync("src") ?? "(no src)";
-            var visible = await imgLocator.IsVisibleAsync();
-            if (!visible) invisible.Add(src);
+            if (attempt > 0) await _ctx.Page.WaitForTimeoutAsync(2_000);
+            invisible = await _ctx.Page.EvaluateAsync<string[]>(@"() => {
+            const imgs = document.querySelectorAll(
+                ""[class*='product'] img, [class*='offering'] img, "" +
+                ""[class*='card'] img, [class*='tile'] img, [class*='item'] img"");
+            const failed = [];
+            for (const img of imgs) {
+                img.scrollIntoView({ behavior: 'instant', block: 'center' });
+                const s = window.getComputedStyle(img);
+                const r = img.getBoundingClientRect();
+                const visible = s.display !== 'none' &&
+                                s.visibility !== 'hidden' &&
+                                parseFloat(s.opacity) > 0 &&
+                                r.width > 0 && r.height > 0;
+                if (!visible) failed.push(img.src || '(no src)');
+            }
+            return failed;
+        }");
         }
 
         Assert.That(invisible, Is.Empty,

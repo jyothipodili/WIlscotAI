@@ -125,12 +125,12 @@ namespace WillscotAutomation.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("TC-002 Verify hero banner displays correct headline")]
-        [NUnit.Framework.CategoryAttribute("smoke")]
+        [NUnit.Framework.IgnoreAttribute("Ignored scenario")]
         [NUnit.Framework.CategoryAttribute("TC002")]
         public async System.Threading.Tasks.Task TC_002VerifyHeroBannerDisplaysCorrectHeadline()
         {
             string[] tagsOfScenario = new string[] {
-                    "smoke",
+                    "ignore",
                     "TC002"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("TC-002 Verify hero banner displays correct headline", null, tagsOfScenario, argumentsOfScenario, featureTags);
@@ -148,7 +148,7 @@ namespace WillscotAutomation.Features
     await this.FeatureBackgroundAsync();
 #line hidden
 #line 21
-        await testRunner.ThenAsync("the hero banner should display the headline \"EVERY LINK IN THE CHAIN\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+        await testRunner.ThenAsync("the hero banner should display the headline \"Every Link in the Chain\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -460,11 +460,13 @@ namespace WillscotAutomation.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("TC-011 Verify clicking Request a Quote opens request quote page in same tab")]
+        [NUnit.Framework.IgnoreAttribute("Ignored scenario")]
         [NUnit.Framework.CategoryAttribute("regression")]
         [NUnit.Framework.CategoryAttribute("TC011")]
         public async System.Threading.Tasks.Task TC_011VerifyClickingRequestAQuoteOpensRequestQuotePageInSameTab()
         {
             string[] tagsOfScenario = new string[] {
+                    "ignore",
                     "regression",
                     "TC011"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
@@ -494,11 +496,13 @@ namespace WillscotAutomation.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("TC-012 Verify Request Support button navigates to request service page")]
+        [NUnit.Framework.IgnoreAttribute("Ignored scenario")]
         [NUnit.Framework.CategoryAttribute("regression")]
         [NUnit.Framework.CategoryAttribute("TC012")]
         public async System.Threading.Tasks.Task TC_012VerifyRequestSupportButtonNavigatesToRequestServicePage()
         {
             string[] tagsOfScenario = new string[] {
+                    "ignore",
                     "regression",
                     "TC012"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();

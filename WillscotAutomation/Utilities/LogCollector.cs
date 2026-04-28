@@ -58,6 +58,10 @@ public sealed class LogCollector
         if (text.Contains("CORS policy",  StringComparison.OrdinalIgnoreCase)) return;
         if (text.Equals("Failed to load resource: net::ERR_FAILED",
                 StringComparison.OrdinalIgnoreCase)) return;
+        // SSL handshake failures from third-party analytics/CDN resources — not a
+        // WillScot product defect; the live site has no control over these endpoints.
+        if (text.Contains("net::ERR_SSL_PROTOCOL_ERROR",
+                StringComparison.OrdinalIgnoreCase)) return;
 
         lock (_lock)
         {

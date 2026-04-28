@@ -63,14 +63,15 @@ pipeline {
                         --configuration Release ^
                         --settings WillscotAutomation.runsettings ^
                         --logger "trx;LogFileName=jenkins-results.trx" ^
+                        --logger "nunit;LogFileName=nunit-results.xml" ^
                         --results-directory TestResults ^
-                        -- NUnit.NumberOfTestWorkers=2'''
+                        -- NUnit.NumberOfTestWorkers=1'''
                 }
             }
             post {
                 always {
-                    // Publish NUnit/TRX results to Jenkins Test Results page
-                    nunit testResultsPattern: 'WillscotAutomation/TestResults/jenkins-results.trx',
+                    // Publish NUnit XML results — NUnitXml.TestLogger emits the format this plugin expects
+                    nunit testResultsPattern: 'WillscotAutomation/TestResults/nunit-results.xml',
                           failIfNoResults: false
                 }
             }

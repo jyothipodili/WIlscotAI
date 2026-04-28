@@ -5,10 +5,14 @@ namespace WillscotAutomation.Utilities;
 public static class ScreenshotHelper
 {
     public static async Task<byte[]> CaptureScreenshot(IPage page)
-        => await page.ScreenshotAsync(new PageScreenshotOptions
+    {
+        // Stop pending font/CDN loads so Playwright's font-ready check doesn't hang.
+        try { await page.EvaluateAsync("() => window.stop()"); } catch { }
+        return await page.ScreenshotAsync(new PageScreenshotOptions
         {
             FullPage = false,
             Type     = ScreenshotType.Png,
-            Timeout  = 10_000   // cap at 10 s so teardown doesn't hang on slow font loads
+            Timeout  = 30_000
         });
+    }
 }
