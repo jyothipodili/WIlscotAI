@@ -1,0 +1,14 @@
+{
+  "$schema": "https://schemas.reqnroll.net/reqnroll-config-latest.json",
+  "language": {
+    "feature": "en-US",
+    "tool": "en-US"
+  },
+  "bindingCulture": {
+    "name": "en-US"
+  },
+  "runtime": {
+    "missingOrPendingStepsOutcome": "Error",
+    "obsoleteBehavior": "Warn"
+  }
+}

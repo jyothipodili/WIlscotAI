@@ -1,0 +1,21 @@
+[07:24:51 INF] [SCENARIO START] TC-008 Verify clicking Solutions navigates to solutions page
+Given I am on the WillScot homepage
+-> done: HomepageSteps.GivenIAmOnTheWillScotHomepage() (11.5s)
+When I click the "Solutions" navigation item
+-> done: NavigationSteps.WhenIClickTheNavigationItem("Solutions") (18.5s)
+Then the URL should contain "/en/solutions"
+-> error:   Expected URL to contain '/en/solutions' but got 'https://www.willscot.com/en'
+Assert.That(_ctx.Page.Url, Does.Contain(expectedFragment))
+  Expected: String containing "/en/solutions"
+  But was:  "https://www.willscot.com/en"
+ (0.0s)
+[07:25:23 ERR] [SCENARIO FAILED] TC-008 Verify clicking Solutions navigates to solutions page —   Expected URL to contain '/en/solutions' but got 'https://www.willscot.com/en'
+Assert.That(_ctx.Page.Url, Does.Contain(expectedFragment))
+  Expected: String containing "/en/solutions"
+  But was:  "https://www.willscot.com/en"
+
+[07:25:28 DBG] Screenshot saved: allure-results\d93d8a87-700d-4562-9154-7f55ab9b1889-attachment.png
+[07:25:28 DBG] Artefact saved: Browser Console Errors → allure-results\3347c88c-85be-46e3-86e3-ae190bbda515-attachment.txt
+[07:25:28 DBG] Artefact saved: Network Failed Requests → allure-results\ff0f1dd2-89a1-4774-9c25-8f7c4734fa69-attachment.txt
+[07:25:28 DBG] Artefact saved: Page HTML Dump → allure-results\390c7d02-2093-4f2c-84ec-5aae080d11b7-attachment.html
+[07:25:28 INF] Failure bundle saved to allure-results for scenario: TC-008 Verify clicking Solutions navigates to solutions page

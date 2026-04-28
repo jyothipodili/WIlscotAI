@@ -1,0 +1,8 @@
+[07:26:22 INF] [SCENARIO START] TC-003 Verify Learn More CTA button is visible and clickable
+Given I am on the WillScot homepage
+-> done: HomepageSteps.GivenIAmOnTheWillScotHomepage() (13.3s)
+Then the "Learn more" CTA button should be visible
+-> done: HomepageSteps.ThenTheCtaButtonShouldBeVisible("Learn more") (0.1s)
+And the "Learn more" CTA button should be enabled
+-> done: HomepageSteps.ThenTheCtaButtonShouldBeEnabled("Learn more") (0.0s)
+[07:26:38 INF] [SCENARIO PASSED] TC-003 Verify Learn More CTA button is visible and clickable

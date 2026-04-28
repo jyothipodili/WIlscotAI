@@ -1,0 +1,8 @@
+[07:20:54 INF] [SCENARIO START] TC-009 Verify clicking About Us navigates to about page
+Given I am on the WillScot homepage
+-> done: HomepageSteps.GivenIAmOnTheWillScotHomepage() (10.7s)
+When I click the "About Us" navigation item
+-> done: NavigationSteps.WhenIClickTheNavigationItem("About Us") (21.4s)
+Then the URL should contain "/en/about"
+-> done: NavigationSteps.ThenTheUrlShouldContain("/en/about") (0.0s)
+[07:21:28 INF] [SCENARIO PASSED] TC-009 Verify clicking About Us navigates to about page

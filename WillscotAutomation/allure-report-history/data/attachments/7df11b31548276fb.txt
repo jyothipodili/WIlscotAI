@@ -1,0 +1,16 @@
+[07:26:40 INF] [SCENARIO START] TC-005 Verify top-level navigation items are visible
+Given I am on the WillScot homepage
+-> done: HomepageSteps.GivenIAmOnTheWillScotHomepage() (9.2s)
+Then the following navigation items should be visible
+  --- table step argument ---
+  | NavItem                  |
+  | Products                 |
+  | Storage Containers       |
+  | Office Trailers          |
+  | Browse by Use            |
+  | Solutions                |
+  | About Us                 |
+  | Locations                |
+  | Office Trailers for Sale |
+-> done: NavigationSteps.ThenTheFollowingNavigationItemsShouldBeVisible(<table>) (0.6s)
+[07:26:51 INF] [SCENARIO PASSED] TC-005 Verify top-level navigation items are visible

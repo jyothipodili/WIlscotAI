@@ -1,0 +1,8 @@
+[07:27:12 INF] [SCENARIO START] TC-012 Verify Request Support button navigates to request service page
+Given I am on the WillScot homepage
+-> done: HomepageSteps.GivenIAmOnTheWillScotHomepage() (7.2s)
+When I click the "Request Support" button
+-> done: NavigationSteps.WhenIClickTheButton("Request Support") (7.7s)
+Then the URL should contain "/en/request-service"
+-> done: NavigationSteps.ThenTheUrlShouldContain("/en/request-service") (0.0s)
+[07:27:30 INF] [SCENARIO PASSED] TC-012 Verify Request Support button navigates to request service page

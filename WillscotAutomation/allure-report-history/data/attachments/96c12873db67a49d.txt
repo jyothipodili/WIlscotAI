@@ -1,0 +1,57 @@
+[07:22:19 INF] [SCENARIO START] TC-008 Verify clicking Solutions navigates to solutions page
+Given I am on the WillScot homepage
+-> done: HomepageSteps.GivenIAmOnTheWillScotHomepage() (12.6s)
+When I click the "Solutions" navigation item
+-> error: Timeout 8000ms exceeded.
+Call log:
+  - waiting for Locator("a[href*='/en/solutions']").First to be visible
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a> (8.0s)
+Then the URL should contain "/en/solutions"
+-> skipped because of previous errors
+[07:22:41 ERR] [SCENARIO FAILED] TC-008 Verify clicking Solutions navigates to solutions page — Timeout 8000ms exceeded.
+Call log:
+  - waiting for Locator("a[href*='/en/solutions']").First to be visible
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+  -   locator resolved to hidden <a tabindex="-1" href="/en/solutions" class="focus-…>…</a>
+[07:22:48 DBG] Screenshot saved: allure-results\261aa6a5-8a2f-4908-a697-0f82525474ad-attachment.png
+[07:22:48 DBG] Artefact saved: Browser Console Errors → allure-results\6e1145ff-8c22-4aed-ae8a-87ca4dcaf8d7-attachment.txt
+[07:22:48 DBG] Artefact saved: Network Failed Requests → allure-results\55c0aade-aa73-4442-b6f0-82f98d2d4570-attachment.txt
+[07:22:48 DBG] Artefact saved: Page HTML Dump → allure-results\912b5a87-872b-4847-b7e3-10fe2c6c528e-attachment.html
+[07:22:48 INF] Failure bundle saved to allure-results for scenario: TC-008 Verify clicking Solutions navigates to solutions page

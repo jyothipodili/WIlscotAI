@@ -1,0 +1,8 @@
+[07:26:40 INF] [SCENARIO START] TC-007 Verify clicking Office Trailers for Sale navigates to sales showroom
+Given I am on the WillScot homepage
+-> done: HomepageSteps.GivenIAmOnTheWillScotHomepage() (9.6s)
+When I click the "Office Trailers for Sale" navigation item
+-> done: NavigationSteps.WhenIClickTheNavigationItem("Office Trailers f...") (20.4s)
+Then the URL should contain "/en/sales-showroom"
+-> done: NavigationSteps.ThenTheUrlShouldContain("/en/sales-showroom") (0.0s)
+[07:27:12 INF] [SCENARIO PASSED] TC-007 Verify clicking Office Trailers for Sale navigates to sales showroom

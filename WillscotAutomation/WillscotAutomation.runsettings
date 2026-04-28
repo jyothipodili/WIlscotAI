@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+
+  <RunConfiguration>
+    <!--
+      MaxCpuCount=1: keep a single VSTest host process.
+      NUnit manages its own thread pool via LevelOfParallelism(4) in AssemblyInfo.cs.
+      Setting this higher would spin up multiple processes instead of threads,
+      which conflicts with NUnit's built-in parallel engine.
+    -->
+    <MaxCpuCount>1</MaxCpuCount>
+    <TargetFrameworkVersion>net8.0</TargetFrameworkVersion>
+  </RunConfiguration>
+
+  <NUnit>
+    <!--
+      Overrides [assembly: LevelOfParallelism(4)] at the runner level.
+      Both values are 4 — kept in sync intentionally.
+    -->
+    <NumberOfTestWorkers>8</NumberOfTestWorkers>
+  </NUnit>
+
+</RunSettings>

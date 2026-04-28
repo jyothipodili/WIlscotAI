@@ -1,0 +1,8 @@
+[07:21:10 INF] [SCENARIO START] TC-011 Verify clicking Request a Quote opens request quote page in same tab
+Given I am on the WillScot homepage
+-> done: HomepageSteps.GivenIAmOnTheWillScotHomepage() (13.5s)
+When I click the "Request a Quote" button in the header
+-> done: NavigationSteps.WhenIClickTheButtonInTheHeader("Request a Quote") (1.8s)
+Then the URL should contain "/en/request-quote"
+-> done: NavigationSteps.ThenTheUrlShouldContain("/en/request-quote") (0.0s)
+[07:21:27 INF] [SCENARIO PASSED] TC-011 Verify clicking Request a Quote opens request quote page in same tab

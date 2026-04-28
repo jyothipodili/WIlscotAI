@@ -1,0 +1,8 @@
+[07:10:51 INF] [SCENARIO START] TC-015 Verify product images load without distortion or broken src
+Given I am on the WillScot homepage
+-> done: HomepageSteps.GivenIAmOnTheWillScotHomepage() (6.1s)
+Then all product images should return HTTP 200
+-> done: ProductOfferingsSteps.ThenAllProductImagesShouldReturnHttp200() (1.2s)
+And all product images should be visible on the page
+-> done: ProductOfferingsSteps.ThenAllProductImagesShouldBeVisible() (3.6s)
+[07:11:03 INF] [SCENARIO PASSED] TC-015 Verify product images load without distortion or broken src

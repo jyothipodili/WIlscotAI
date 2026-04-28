@@ -1,0 +1,6 @@
+[07:46:53 INF] [SCENARIO START] TC-010 Verify Request a Quote button is visible in header
+Given I am on the WillScot homepage
+-> done: HomepageSteps.GivenIAmOnTheWillScotHomepage() (14.4s)
+Then the "Request a Quote" button should be visible in the header
+-> done: NavigationSteps.ThenTheButtonShouldBeVisibleInTheHeader("Request a Quote") (1.7s)
+[07:47:15 INF] [SCENARIO PASSED] TC-010 Verify Request a Quote button is visible in header

@@ -1,0 +1,6 @@
+[ERROR] Not allowed to load local resource: blob:https://app.unbounce.com/50854c13-bba6-4d73-a60a-4d0adb631b38
+[ERROR] Not allowed to load local resource: blob:https://app.unbounce.com/897f2e19-a83d-4db9-8d7b-81bb03c39875
+[ERROR] Error initializing chat launch: TypeError: Cannot read properties of undefined (reading 'launchChat')
+    at https://www.willscot.com/en:34:55
+[ERROR] Access to XMLHttpRequest at 'https://neworgmmws.my.site.com/ESWWillScotMessaging1742416195781/assets/styles/bootstrap.min.css' from origin 'https://www.willscot.com' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+[ERROR] Failed to load resource: net::ERR_FAILED

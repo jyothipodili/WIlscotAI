@@ -1,0 +1,58 @@
+version: "3.9"
+
+# =============================================================
+#  WillScot Automation — Docker Compose
+#
+#  Usage:
+#    docker-compose up                    # QA (default)
+#    TEST_ENV=qa  docker-compose up       # QA  explicitly
+#    TEST_ENV=uat docker-compose up       # UAT (appsettings.Stage.json)
+#    TEST_ENV=dev docker-compose up       # DEV (base appsettings.json)
+#
+#    FILTER=smoke TEST_ENV=qa docker-compose up   # smoke tests only
+#    FILTER=regression docker-compose up          # regression suite
+#
+#  Reports land on host at:
+#    ./reports/allure-results/
+#    ./reports/TestResults/
+#    ./reports/logs/
+# =============================================================
+
+services:
+  willscot-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    image: willscot-automation:latest
+    container_name: willscot-tests
+
+    # Load environment-specific .env file (resolved from .env defaults)
+    env_file:
+      - "env/${TEST_ENV:-qa}.env"
+
+    environment:
+      # These override env_file values when explicitly set on host
+      - TEST_ENV=${TEST_ENV:-QA}
+      - BROWSER=${BROWSER:-chromium}
+      - HEADLESS=${HEADLESS:-true}
+      - FILTER=${FILTER:-}
+      # Secrets: set on host shell or in CI secret store — never commit values
+      - TEAMS_WEBHOOK_URL=${TEAMS_WEBHOOK_URL:-}
+      - ZEPHYR_JWT_TOKEN=${ZEPHYR_JWT_TOKEN:-}
+      - JIRA_API_TOKEN=${JIRA_API_TOKEN:-}
+
+    volumes:
+      # Bind-mount output directories so reports persist after container exits
+      - ./reports/allure-results:/app/allure-results
+      - ./reports/TestResults:/app/TestResults
+      - ./reports/logs:/app/logs
+
+    # Playwright requires /dev/shm for shared memory (Chromium)
+    shm_size: "2gb"
+
+    security_opt:
+      - no-new-privileges:true
+
+    # Remove container automatically after run completes
+    restart: "no"

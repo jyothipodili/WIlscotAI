@@ -1,0 +1,6 @@
+[07:27:30 INF] [SCENARIO START] TC-016 Verify all product links return HTTP 200
+Given I am on the WillScot homepage
+-> done: HomepageSteps.GivenIAmOnTheWillScotHomepage() (8.2s)
+Then all product links should return HTTP 200
+-> done: ProductOfferingsSteps.ThenAllProductLinksShouldReturnHttp200() (1.0s)
+[07:27:40 INF] [SCENARIO PASSED] TC-016 Verify all product links return HTTP 200

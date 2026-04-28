@@ -1,0 +1,6 @@
+[07:26:22 INF] [SCENARIO START] TC-001 Verify homepage loads within 4 seconds
+Given I am on the WillScot homepage
+-> done: HomepageSteps.GivenIAmOnTheWillScotHomepage() (13.4s)
+Then the page should have loaded within 4 seconds
+-> done: HomepageSteps.ThenThePageShouldHaveLoadedWithin4Seconds() (0.0s)
+[07:26:38 INF] [SCENARIO PASSED] TC-001 Verify homepage loads within 4 seconds

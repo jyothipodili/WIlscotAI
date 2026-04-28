@@ -1,0 +1,77 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>WillscotAutomation</RootNamespace>
+    <AssemblyName>WillscotAutomation</AssemblyName>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <RunSettingsFilePath>$(MSBuildProjectDirectory)\WillscotAutomation.runsettings</RunSettingsFilePath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Playwright -->
+    <PackageReference Include="Microsoft.Playwright" Version="1.44.0" />
+
+    <!-- BDD Framework -->
+    <PackageReference Include="Reqnroll" Version="2.2.0" />
+    <PackageReference Include="Reqnroll.NUnit" Version="2.2.0" />
+
+    <!-- Test Runner -->
+    <PackageReference Include="NUnit" Version="4.1.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+
+    <!-- Allure Reporting -->
+    <PackageReference Include="Allure.NUnit" Version="2.12.1" />
+
+    <!-- Configuration -->
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.0" />
+
+    <!-- Logging -->
+    <PackageReference Include="Serilog" Version="3.1.1" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+  </ItemGroup>
+
+  <!--
+    Reqnroll 2.2.0 generates FeatureTearDownAsync as 'virtual', but NUnit 4
+    InstancePerTestCase mode requires [OneTimeTearDown] methods to be 'static'.
+    This target patches every regenerated .feature.cs before the compiler sees it.
+  -->
+  <!--
+    Reqnroll 2.2.0 generates FeatureTearDownAsync as 'virtual', but NUnit 4
+    InstancePerTestCase mode requires [OneTimeTearDown] methods to be 'static'.
+    This target patches every regenerated .feature.cs before the compiler sees it.
+    Uses $(SystemRoot) to locate PowerShell reliably regardless of PATH.
+  -->
+  <Target Name="PatchReqnrollTearDown" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <FeatureCodeBehind Include="**\*.feature.cs" />
+    </ItemGroup>
+    <!-- Windows: use PowerShell -->
+    <Exec
+      Command="&quot;$(SystemRoot)\System32\WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -Command &quot;$f = '%(FeatureCodeBehind.FullPath)'; $c = Get-Content $f -Raw; $p = $c -replace 'public virtual async System\.Threading\.Tasks\.Task FeatureTearDownAsync', 'public static async System.Threading.Tasks.Task FeatureTearDownAsync'; if ($c -ne $p) { Set-Content $f $p -NoNewline; Write-Host '[PatchReqnroll] Patched FeatureTearDownAsync in $f' }&quot;"
+      Condition="'$(OS)' == 'Windows_NT' AND Exists('%(FeatureCodeBehind.FullPath)')" />
+    <!-- Linux/macOS: use sed -->
+    <Exec
+      Command="sed -i 's/public virtual async System\.Threading\.Tasks\.Task FeatureTearDownAsync/public static async System.Threading.Tasks.Task FeatureTearDownAsync/g' %(FeatureCodeBehind.FullPath)"
+      Condition="'$(OS)' != 'Windows_NT' AND Exists('%(FeatureCodeBehind.FullPath)')" />
+  </Target>
+
+  <ItemGroup>
+    <None Update="Config\appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="allure.config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

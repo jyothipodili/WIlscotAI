@@ -1,0 +1,42 @@
+# Build outputs
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# Test outputs
+TestResult.xml
+TestResults/
+logs/
+allure-results/
+allure-report/
+*.zip
+
+# Secrets — NEVER commit real credentials
+**/appsettings.*.json
+# Keep the base appsettings.json (has no secrets — password comes from env var)
+!**/appsettings.json
+
+# Jenkins
+.jenkins/
+jenkins-results.trx
+
+# Node
+node_modules/
+package-lock.json
+
+# Environment / secrets
+.env
+env/
+
+# Temp / OS
+~$*
+*.tmp
+
+# Claude Code local config
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db

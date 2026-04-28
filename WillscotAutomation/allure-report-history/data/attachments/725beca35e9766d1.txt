@@ -1,0 +1,6 @@
+[07:26:22 INF] [SCENARIO START] TC-002 Verify hero banner displays correct headline
+Given I am on the WillScot homepage
+-> done: HomepageSteps.GivenIAmOnTheWillScotHomepage() (13.5s)
+Then the hero banner should display the headline "Introducing WillScot Fencing Solutions"
+-> done: HomepageSteps.ThenTheHeroBannerShouldDisplayTheHeadline("Introducing WillS...") (1.6s)
+[07:26:40 INF] [SCENARIO PASSED] TC-002 Verify hero banner displays correct headline

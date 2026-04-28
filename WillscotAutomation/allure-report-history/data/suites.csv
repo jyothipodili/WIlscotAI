@@ -1,0 +1,55 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"TC-006 Verify clicking Locations navigates to locations page
+WillScot Homepage Validation
+","31966","TC-006 Verify clicking Locations navigates to locations page","","2026-04-08","passed","2026-04-08","","WillScot Homepage","WillScotHomepageValidationFeature","TC_006VerifyClickingLocationsNavigatesToLocationsPage"
+"TC-002 Verify hero banner displays correct headline
+WillScot Homepage Validation
+","18039","TC-002 Verify hero banner displays correct headline","","2026-04-08","passed","2026-04-08","","WillScot Homepage","WillScotHomepageValidationFeature","TC_002VerifyHeroBannerDisplaysCorrectHeadline"
+"TC-003 Verify Learn More CTA button is visible and clickable
+WillScot Homepage Validation
+","17927","TC-003 Verify Learn More CTA button is visible and clickable","","2026-04-08","passed","2026-04-08","","WillScot Homepage","WillScotHomepageValidationFeature","TC_003VerifyLearnMoreCTAButtonIsVisibleAndClickable"
+"TC-007 Verify clicking Office Trailers for Sale navigates to sales showroom
+WillScot Homepage Validation
+","31844","TC-007 Verify clicking Office Trailers for Sale navigates to sales showroom","","2026-04-08","passed","2026-04-08","","WillScot Homepage","WillScotHomepageValidationFeature","TC_007VerifyClickingOfficeTrailersForSaleNavigatesToSalesShowroom"
+"TC-012 Verify Request Support button navigates to request service page
+WillScot Homepage Validation
+","18210","TC-012 Verify Request Support button navigates to request service page","","2026-04-08","passed","2026-04-08","","WillScot Homepage","WillScotHomepageValidationFeature","TC_012VerifyRequestSupportButtonNavigatesToRequestServicePage"
+"TC-016 Verify all product links return HTTP 200
+WillScot Homepage Validation
+","10978","TC-016 Verify all product links return HTTP 200","","2026-04-08","passed","2026-04-08","","WillScot Homepage","WillScotHomepageValidationFeature","TC_016VerifyAllProductLinksReturnHTTP200"
+"TC-009 Verify clicking About Us navigates to about page
+WillScot Homepage Validation
+","42318","TC-009 Verify clicking About Us navigates to about page","","2026-04-08","passed","2026-04-08","","WillScot Homepage","WillScotHomepageValidationFeature","TC_009VerifyClickingAboutUsNavigatesToAboutPage"
+"TC-011 Verify clicking Request a Quote opens request quote page in same tab
+WillScot Homepage Validation
+","14492","TC-011 Verify clicking Request a Quote opens request quote page in same tab","","2026-04-08","passed","2026-04-08","","WillScot Homepage","WillScotHomepageValidationFeature","TC_011VerifyClickingRequestAQuoteOpensRequestQuotePageInSameTab"
+"TC-014 Verify clicking Storage Containers card navigates correctly
+WillScot Homepage Validation
+","20728","TC-014 Verify clicking Storage Containers card navigates correctly","","2026-04-08","passed","2026-04-08","","WillScot Homepage","WillScotHomepageValidationFeature","TC_014VerifyClickingStorageContainersCardNavigatesCorrectly"
+"TC-013 Verify Storage Containers product card displays with image and label
+WillScot Homepage Validation
+","12960","TC-013 Verify Storage Containers product card displays with image and label","","2026-04-08","passed","2026-04-08","","WillScot Homepage","WillScotHomepageValidationFeature","TC_013VerifyStorageContainersProductCardDisplaysWithImageAndLabel"
+"TC-017 Verify industry solution tabs are displayed with correct names
+WillScot Homepage Validation
+","11257","TC-017 Verify industry solution tabs are displayed with correct names","","2026-04-08","passed","2026-04-08","","WillScot Homepage","WillScotHomepageValidationFeature","TC_017VerifyIndustrySolutionTabsAreDisplayedWithCorrectNames"
+"TC-008 Verify page title contains WillScot branding
+WillScot Homepage Validation
+","11173","TC-008 Verify page title contains WillScot branding","","2026-04-08","passed","2026-04-08","","WillScot Homepage","WillScotHomepageValidationFeature","TC_008VerifyPageTitleContainsWillScotBranding"
+"TC-010 Verify Request a Quote button is visible in header
+WillScot Homepage Validation
+","18708","TC-010 Verify Request a Quote button is visible in header","","2026-04-08","passed","2026-04-08","","WillScot Homepage","WillScotHomepageValidationFeature","TC_010VerifyRequestAQuoteButtonIsVisibleInHeader"
+"TC-005 Verify top-level navigation items are visible
+WillScot Homepage Validation
+","11616","TC-005 Verify top-level navigation items are visible","","2026-04-08","passed","2026-04-08","","WillScot Homepage","WillScotHomepageValidationFeature","TC_005VerifyTop_LevelNavigationItemsAreVisible"
+"TC-008 Verify clicking Solutions navigates to solutions page
+WillScot Homepage Validation
+","36945","TC-008 Verify clicking Solutions navigates to solutions page","","2026-04-08","failed","2026-04-08","","WillScot Homepage","WillScotHomepageValidationFeature","TC_008VerifyClickingSolutionsNavigatesToSolutionsPage"
+"TC-001 Verify homepage loads within 4 seconds
+WillScot Homepage Validation
+","17933","TC-001 Verify homepage loads within 4 seconds","","2026-04-08","passed","2026-04-08","","WillScot Homepage","WillScotHomepageValidationFeature","TC_001VerifyHomepageLoadsWithin4Seconds"
+"TC-004 Verify no broken images console errors or JavaScript exceptions
+WillScot Homepage Validation
+","18115","TC-004 Verify no broken images console errors or JavaScript exceptions","","2026-04-08","passed","2026-04-08","","WillScot Homepage","WillScotHomepageValidationFeature","TC_004VerifyNoBrokenImagesConsoleErrorsOrJavaScriptExceptions"
+"TC-015 Verify product images load without distortion or broken src
+WillScot Homepage Validation
+","19857","TC-015 Verify product images load without distortion or broken src","","2026-04-08","passed","2026-04-08","","WillScot Homepage","WillScotHomepageValidationFeature","TC_015VerifyProductImagesLoadWithoutDistortionOrBrokenSrc"

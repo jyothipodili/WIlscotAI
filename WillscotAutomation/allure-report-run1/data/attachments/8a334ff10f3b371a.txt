@@ -1,0 +1,8 @@
+[07:47:25 INF] [SCENARIO START] TC-014 Verify clicking Storage Containers card navigates correctly
+Given I am on the WillScot homepage
+-> done: HomepageSteps.GivenIAmOnTheWillScotHomepage() (11.3s)
+When I click the Storage Containers product card
+-> done: ProductOfferingsSteps.WhenIClickTheStorageContainersProductCard() (5.1s)
+Then the URL should contain "/en/store-secure/storage-containers"
+-> done: NavigationSteps.ThenTheUrlShouldContain("/en/store-secure/...") (0.0s)
+[07:47:49 INF] [SCENARIO PASSED] TC-014 Verify clicking Storage Containers card navigates correctly

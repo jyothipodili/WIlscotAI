@@ -1,0 +1,14 @@
+[07:10:58 INF] [SCENARIO START] TC-017 Verify industry solution tabs are displayed with correct names
+Given I am on the WillScot homepage
+-> done: HomepageSteps.GivenIAmOnTheWillScotHomepage() (8.9s)
+Then the following industry solution tabs should be displayed
+  --- table step argument ---
+  | TabName                    |
+  | Construction & Builders    |
+  | Education & Government     |
+  | Energy & Industrial        |
+  | Retail & Distribution      |
+  | Manufacturing              |
+  | Healthcare & Entertainment |
+-> done: IndustrySolutionsSteps.ThenTheFollowingIndustrySolutionTabsShouldBeDisplayed(<table>) (2.0s)
+[07:11:13 INF] [SCENARIO PASSED] TC-017 Verify industry solution tabs are displayed with correct names

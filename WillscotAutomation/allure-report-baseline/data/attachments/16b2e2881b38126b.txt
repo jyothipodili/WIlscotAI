@@ -1,0 +1,10 @@
+[07:20:13 INF] [SCENARIO START] TC-004 Verify no broken images console errors or JavaScript exceptions
+Given I am on the WillScot homepage
+-> done: HomepageSteps.GivenIAmOnTheWillScotHomepage() (23.5s)
+Then there should be no broken images on the page
+-> done: HomepageSteps.ThenThereShouldBeNoBrokenImages() (1.5s)
+And there should be no browser console errors
+-> done: HomepageSteps.ThenThereShouldBeNoBrowserConsoleErrors() (0.0s)
+And there should be no uncaught JavaScript exceptions
+-> done: HomepageSteps.ThenThereShouldBeNoUncaughtJavaScriptExceptions() (0.0s)
+[07:20:41 INF] [SCENARIO PASSED] TC-004 Verify no broken images console errors or JavaScript exceptions

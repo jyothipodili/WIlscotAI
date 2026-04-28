@@ -1,0 +1,8 @@
+[07:46:32 INF] [SCENARIO START] TC-006 Verify clicking Locations navigates to locations page
+Given I am on the WillScot homepage
+-> done: HomepageSteps.GivenIAmOnTheWillScotHomepage() (10.3s)
+When I click the "Locations" navigation item
+-> done: NavigationSteps.WhenIClickTheNavigationItem("Locations") (26.8s)
+Then the URL should contain "/en/locations"
+-> done: NavigationSteps.ThenTheUrlShouldContain("/en/locations") (0.0s)
+[07:47:13 INF] [SCENARIO PASSED] TC-006 Verify clicking Locations navigates to locations page

@@ -1,0 +1,8 @@
+[07:47:15 INF] [SCENARIO START] TC-013 Verify Storage Containers product card displays with image and label
+Given I am on the WillScot homepage
+-> done: HomepageSteps.GivenIAmOnTheWillScotHomepage() (7.1s)
+Then the Storage Containers product card should display with a visible image
+-> done: ProductOfferingsSteps.ThenStorageContainersCardHasVisibleImage() (2.7s)
+And the Storage Containers product card label should read "Storage Containers"
+-> done: ProductOfferingsSteps.ThenStorageContainersCardLabelShouldRead("Storage Containers") (0.1s)
+[07:47:29 INF] [SCENARIO PASSED] TC-013 Verify Storage Containers product card displays with image and label
