@@ -1,0 +1,55 @@
+# =============================================================
+#  .dockerignore — exclude build artifacts and runtime outputs
+#  from the Docker build context to keep image lean and fast
+# =============================================================
+
+# .NET build artifacts
+WillscotAutomation/bin/
+WillscotAutomation/obj/
+
+# Allure output directories
+WillscotAutomation/allure-results/
+WillscotAutomation/allure-report/
+WillscotAutomation/allure-report-*/
+
+# Test output
+WillscotAutomation/TestResults/
+WillscotAutomation/logs/
+
+# Host-side report volume mount target
+reports/
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# GitHub Actions
+WillscotAutomation/playwright-tests.yml
+.github/
+
+# IDE / OS
+.vs/
+.vscode/
+*.user
+*.suo
+.DS_Store
+Thumbs.db
+
+# Node (package.json exists at root — not needed in image)
+node_modules/
+package-lock.json
+package.json
+
+# Documentation (not needed at runtime)
+WillscotAutomation/Documentation/
+
+# Zephyr artifacts
+zephyr-artifacts/
+
+# Zip archives
+*.zip
+
+# Temp Word files
+~$*
+*.tmp

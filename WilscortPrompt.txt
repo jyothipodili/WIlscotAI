@@ -1,0 +1,78 @@
+capture browser error logs in allure report 
+
+cd WillscotAutomation
+dotnet build
+pwsh bin/Debug/net8.0/playwright.ps1 install chromium
+
+
+
+dotnet test                                           # all scenarios
+dotnet test --filter "Category=smoke"                 # smoke only
+HEADLESS=false dotnet test --filter "Category=TC002"  # single test, visible browser
+allure serve allure-results                           # live report
+
+
+===================================================
+  Passed TC_003VerifyLearnMoreCTAButtonIsVisibleAndClickable [16 s]
+  Passed TC_002VerifyHeroBannerDisplaysCorrectHeadline [16 s]
+  Passed TC_001VerifyHomepageLoadsWithin4Seconds [16 s]
+  Passed TC_004VerifyNoBrokenImagesConsoleErrorsOrJavaScriptExceptions [16 s]
+  Passed TC_008VerifyPageTitleContainsWillScotBranding [17 s]
+  Passed TC_005VerifyTop_LevelNavigationItemsAreVisible [19 s]
+  Passed TC_010VerifyRequestAQuoteButtonIsVisibleInHeader [13 s]
+  Passed TC_007VerifyClickingOfficeTrailersForSaleNavigatesToSalesShowroom [35 s]
+  Passed TC_006VerifyClickingLocationsNavigatesToLocationsPage [35 s]
+  Passed TC_009VerifyClickingAboutUsNavigatesToAboutPage [32 s]
+  Passed TC_011VerifyClickingRequestAQuoteOpensRequestQuotePageInSameTab [19 s]
+  Passed TC_013VerifyStorageContainersProductCardDisplaysWithImageAndLabel [16 s]
+  Passed TC_012VerifyRequestSupportButtonNavigatesToRequestServicePage [19 s]
+  Passed TC_016VerifyAllProductLinksReturnHTTP200 [15 s]
+  Passed TC_017VerifyIndustrySolutionTabsAreDisplayedWithCorrectNames [15 s]
+  Passed TC_014VerifyClickingStorageContainersCardNavigatesCorrectly [21 s]
+  Passed TC_015VerifyProductImagesLoadWithoutDistortionOrBrokenSrc [20 s]
+Total tests: 17
+     Passed: 17
+ Total time: 1.5548 Minutes
+ ================================================
+ ## 8. How to Run
+
+```bash
+# Headless (CI/CD mode — no visible browser)
+dotnet test -c Release
+
+# Headed (demo mode — see browsers open)
+# Set "Headless": false in Config/appsettings.json, then:
+dotnet test -c Release
+
+# Generate Allure report
+allure generate bin/Release/net8.0/allure-results --clean -o allure-report
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"EmailSettings": {
+    "EnableEmail": false,
+    "SmtpServer": "smtp.gmail.com",
+    "Port": 587,
+    "SenderEmail": "<sender-email>",
+    "SenderPassword": "",
+    "RecipientEmails": "<recipient-email-1>;<recipient-email-2>",
+    "Cc": ""
+  }
+
+
+
+# Open Allure report
+allure open allure-report
