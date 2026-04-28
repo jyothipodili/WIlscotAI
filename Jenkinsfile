@@ -64,7 +64,7 @@ pipeline {
                         --settings WillscotAutomation.runsettings ^
                         --logger "trx;LogFileName=jenkins-results.trx" ^
                         --results-directory TestResults ^
-                        -- NUnit.NumberOfTestWorkers=4'''
+                        -- NUnit.NumberOfTestWorkers=2'''
                 }
             }
             post {
