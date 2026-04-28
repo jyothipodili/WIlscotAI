@@ -6,6 +6,8 @@ pipeline {
         DOTNET_NOLOGO                = '1'
         PROJECT_DIR                  = 'WillscotAutomation'
         ALLURE_RESULTS               = 'WillscotAutomation/allure-results'
+        // Use Prod config: 120s navigation timeout, headless, targets willscot.com
+        TEST_ENV                     = 'Prod'
     }
 
     options {
@@ -61,7 +63,8 @@ pipeline {
                         --configuration Release ^
                         --settings WillscotAutomation.runsettings ^
                         --logger "trx;LogFileName=jenkins-results.trx" ^
-                        --results-directory TestResults'''
+                        --results-directory TestResults ^
+                        -- NUnit.NumberOfTestWorkers=4'''
                 }
             }
             post {
