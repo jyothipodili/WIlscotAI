@@ -1,39 +1,7 @@
 {
   "allure": {
     "directory": "allure-results",
-    "title": "WillScot Homepage Validation",
-    "links": [
-      {
-        "type": "issue",
-        "urlTemplate": "https://github.com/willscot/issues/{}"
-      }
-    ],
-    "categories": [
-      {
-        "name": "Product Defects",
-        "messageRegex": ".*Assert.*|.*AssertionException.*",
-        "matchedStatuses": [ "failed" ]
-      },
-      {
-        "name": "Navigation Failures",
-        "messageRegex": ".*URL.*|.*navigate.*|.*location.*",
-        "matchedStatuses": [ "failed" ]
-      },
-      {
-        "name": "Image / Asset Failures",
-        "messageRegex": ".*image.*|.*broken.*|.*non-200.*",
-        "matchedStatuses": [ "failed" ]
-      },
-      {
-        "name": "Test Infrastructure Issues",
-        "messageRegex": ".*PlaywrightException.*|.*TimeoutException.*|.*timeout.*",
-        "matchedStatuses": [ "broken" ]
-      },
-      {
-        "name": "Flaky Tests",
-        "messageRegex": ".*flaky.*",
-        "matchedStatuses": [ "failed", "passed" ]
-      }
-    ]
+    "title": "WillScot Homepage Automation",
+    "links": []
   }
 }
