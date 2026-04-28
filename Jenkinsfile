@@ -79,10 +79,15 @@ pipeline {
 
         stage('Publish Allure Report') {
             steps {
-                allure([
-                    reportBuildPolicy: 'ALWAYS',
-                    results: [[path: "${ALLURE_RESULTS}"]]
-                ])
+                // catchError keeps the build GREEN if the report step fails —
+                // only test failures should mark a build as failed.
+                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                    allure([
+                        reportBuildPolicy: 'ALWAYS',
+                        results          : [[path: "${ALLURE_RESULTS}"]],
+                        commandline      : 'allure'
+                    ])
+                }
             }
         }
     }
