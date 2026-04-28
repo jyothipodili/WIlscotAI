@@ -28,8 +28,20 @@ public static class WaitHelper
         await locator.ClickAsync();
     }
 
+    // JS-based scroll — re-queries the DOM on every call, immune to stale handle
+    // errors that occur when React re-renders during lazy loading.
     public static async Task ScrollIntoView(ILocator locator)
-        => await locator.ScrollIntoViewIfNeededAsync();
+    {
+        try
+        {
+            await locator.EvaluateAsync(
+                "el => el.scrollIntoView({ behavior: 'instant', block: 'center' })");
+        }
+        catch
+        {
+            // Element gone during re-render — the caller's visibility assertion will catch it.
+        }
+    }
 
     public static async Task<string> GetText(ILocator locator)
         => (await locator.InnerTextAsync()).Trim();
