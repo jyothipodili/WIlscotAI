@@ -23,7 +23,7 @@ Feature: WillScot Homepage Validation
     # ──────────────────────────────────────────────────────────────────────────
     # TC-003  Learn More CTA
     # ──────────────────────────────────────────────────────────────────────────
-    @smoke @regression @TC003
+    @smoke @TC003
     Scenario: TC-003 Verify Learn More CTA button is visible and clickable
         Then the "Learn more" CTA button should be visible
         And the "Learn more" CTA button should be enabled
