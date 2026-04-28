@@ -17,7 +17,9 @@ pipeline {
     }
 
     triggers {
-        githubPush()
+        // Polls GitHub every 2 minutes — works on private networks where
+        // GitHub cannot reach Jenkins via webhook (private IP 10.x.x.x).
+        pollSCM('H/2 * * * *')
     }
 
     stages {
