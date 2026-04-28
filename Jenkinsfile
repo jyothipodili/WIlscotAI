@@ -48,7 +48,7 @@ pipeline {
                 dir("${PROJECT_DIR}") {
                     // Installs only Chromium to keep build times short.
                     // Change to 'install --with-deps' if Firefox/WebKit tests are added.
-                    bat 'powershell -NonInteractive -File "bin\\Release\\net8.0\\playwright.ps1" install chromium'
+                    bat 'powershell -NonInteractive -ExecutionPolicy Bypass -File "bin\\Release\\net8.0\\playwright.ps1" install chromium'
                 }
             }
         }
