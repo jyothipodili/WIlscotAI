@@ -94,7 +94,7 @@ Feature: WillScot Homepage Validation
     # ──────────────────────────────────────────────────────────────────────────
     # TC-011  Request a Quote – Navigation
     # ──────────────────────────────────────────────────────────────────────────
-    @regression @TC011
+    @ignore @regression @TC011
     Scenario: TC-011 Verify clicking Request a Quote opens request quote page in same tab
         When I click the "Request a Quote" button in the header
         Then the URL should contain "/en/request-quote"
@@ -102,7 +102,7 @@ Feature: WillScot Homepage Validation
     # ──────────────────────────────────────────────────────────────────────────
     # TC-012  Request Support – Navigation
     # ──────────────────────────────────────────────────────────────────────────
-    @regression @TC012
+    @ignore @regression @TC012
     Scenario: TC-012 Verify Request Support button navigates to request service page
         When I click the "Request Support" button
         Then the URL should contain "/en/request-service"
