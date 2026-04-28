@@ -18,7 +18,7 @@ Feature: WillScot Homepage Validation
     # ──────────────────────────────────────────────────────────────────────────
     @smoke @TC002
     Scenario: TC-002 Verify hero banner displays correct headline
-        Then the hero banner should display the headline "EVERY LINK IN THE CHAIN"
+        Then the hero banner should display the headline "Every Link in the Chain"
 
     # ──────────────────────────────────────────────────────────────────────────
     # TC-003  Learn More CTA

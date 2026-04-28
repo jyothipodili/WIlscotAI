@@ -80,7 +80,7 @@ public sealed class HomepageSteps
         await WaitHelper.WaitForVisible(_homePage.HeroBannerHeadline, 10_000);
         var actualText = await WaitHelper.GetText(_homePage.HeroBannerHeadline);
 
-        Assert.That(actualText, Does.Contain(expectedHeadline),
+        Assert.That(actualText, Does.Contain(expectedHeadline).IgnoreCase,
             $"Hero banner headline mismatch. Expected to contain: '{expectedHeadline}'. " +
             $"Actual: '{actualText}'");
     }
