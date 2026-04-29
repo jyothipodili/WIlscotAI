@@ -31,7 +31,7 @@ Feature: WillScot Homepage Validation
     # ──────────────────────────────────────────────────────────────────────────
     # TC-004  Page Quality – No Errors
     # ──────────────────────────────────────────────────────────────────────────
-    @regression @quality @TC004
+    @regression @TC004
     Scenario: TC-004 Verify no broken images console errors or JavaScript exceptions
         Then there should be no broken images on the page
         And there should be no browser console errors
