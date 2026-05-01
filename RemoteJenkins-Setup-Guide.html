@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: Calibri, sans-serif; font-size: 11pt; margin: 2cm; color: #000; }
+  h1 { font-size: 18pt; color: #1F3864; border-bottom: 2px solid #1F3864; padding-bottom: 4px; }
+  h2 { font-size: 13pt; color: #2E75B6; margin-top: 18px; margin-bottom: 4px; }
+  h3 { font-size: 11pt; color: #404040; margin-top: 10px; margin-bottom: 2px; }
+  table { border-collapse: collapse; width: 100%; margin: 6px 0; font-size: 10.5pt; }
+  th { background-color: #2E75B6; color: white; padding: 5px 8px; text-align: left; }
+  td { border: 1px solid #BDD7EE; padding: 4px 8px; }
+  tr:nth-child(even) td { background-color: #DEEAF1; }
+  code, pre { font-family: Consolas, monospace; font-size: 9.5pt; background: #F2F2F2; }
+  pre { padding: 8px; border-left: 3px solid #2E75B6; margin: 4px 0; white-space: pre-wrap; }
+  .step { margin-left: 0; }
+  ol { margin: 4px 0 4px 20px; }
+  li { margin-bottom: 3px; }
+  .note { background: #FFF2CC; border-left: 3px solid #FFD700; padding: 4px 8px; font-size: 10pt; }
+  .success { background: #E2EFDA; border-left: 3px solid #70AD47; padding: 4px 8px; font-size: 10pt; }
+  hr { border: none; border-top: 1px solid #BDD7EE; margin: 12px 0; }
+</style>
+</head>
+<body>
+
+<h1>Remote Jenkins CI/CD Setup — Step by Step</h1>
+
+<table>
+  <tr><th>Item</th><th>Value</th></tr>
+  <tr><td>GitHub Repo</td><td>https://github.com/jyothipodili/WIlscotAI</td></tr>
+  <tr><td>Branch</td><td>main</td></tr>
+  <tr><td>Remote Jenkins URL</td><td>http://localhost:8080/ (open on remote server)</td></tr>
+  <tr><td>Jenkins Username</td><td>santhipodili</td></tr>
+  <tr><td>Project</td><td>.NET 8 / Playwright / Reqnroll / NUnit</td></tr>
+</table>
+
+<hr/>
+
+<h2>Step 1 — Install Git on Remote Server</h2>
+<p>Open <b>PowerShell as Administrator</b> on the remote server and run:</p>
+<pre>Invoke-WebRequest -Uri "https://github.com/git-for-windows/git/releases/download/v2.44.0.windows.1/Git-2.44.0-64-bit.exe" -OutFile "$env:TEMP\git-installer.exe"
+Start-Process -FilePath "$env:TEMP\git-installer.exe" -ArgumentList "/VERYSILENT /NORESTART /NOCANCEL /SP-" -Wait</pre>
+<p>Verify (open new CMD):</p>
+<pre>git --version</pre>
+<p>Expected: <code>git version 2.44.0.windows.1</code></p>
+
+<hr/>
+
+<h2>Step 2 — Install .NET 8 SDK on Remote Server</h2>
+<p>In the same <b>Admin PowerShell</b>:</p>
+<pre>Invoke-WebRequest -Uri "https://download.microsoft.com/download/dotnet/8.0/8.0.408/dotnet-sdk-8.0.408-win-x64.exe" -OutFile "$env:TEMP\dotnet-sdk8-installer.exe"
+Start-Process -FilePath "$env:TEMP\dotnet-sdk8-installer.exe" -ArgumentList "/install /quiet /norestart" -Wait</pre>
+<p>Verify (open new CMD):</p>
+<pre>dotnet --version</pre>
+<p>Expected: <code>8.0.x</code></p>
+
+<hr/>
+
+<h2>Step 3 — Add Git and .NET to Windows System PATH</h2>
+<p>Run in <b>Admin PowerShell</b> — this ensures Jenkins service can find both tools:</p>
+<pre>$currentPath = [System.Environment]::GetEnvironmentVariable("PATH", "Machine")
+$toAdd = @("C:\Program Files\Git\bin", "C:\Program Files\dotnet")
+foreach ($p in $toAdd) {
+    if ($currentPath -notlike "*$p*") {
+        $currentPath = "$currentPath;$p"
+        Write-Host "[ADDED] $p"
+    }
+}
+[System.Environment]::SetEnvironmentVariable("PATH", $currentPath, "Machine")
+Restart-Service -Name "Jenkins"
+Write-Host "Done — wait 20 seconds then open http://localhost:8080"</pre>
+
+<hr/>
+
+<h2>Step 4 — Install Required Jenkins Plugins</h2>
+<ol>
+  <li>Open browser on remote server → <code>http://localhost:8080/</code></li>
+  <li>Login with Jenkins credentials</li>
+  <li>Go to: <b>Manage Jenkins → Plugins → Available plugins</b></li>
+  <li>Search and install each plugin below (tick checkbox → click Install):</li>
+</ol>
+
+<table>
+  <tr><th>Search Term</th><th>Plugin Name</th></tr>
+  <tr><td>Git</td><td>Git plugin</td></tr>
+  <tr><td>Pipeline</td><td>Pipeline</td></tr>
+  <tr><td>NUnit</td><td>NUnit plugin</td></tr>
+  <tr><td>Allure</td><td>Allure Jenkins Plugin</td></tr>
+  <tr><td>Timestamper</td><td>Timestamper</td></tr>
+  <tr><td>Workspace Cleanup</td><td>Workspace Cleanup (skip if already installed)</td></tr>
+</table>
+
+<ol start="5">
+  <li>Check <b>"Restart Jenkins when installation is complete and no jobs are running"</b></li>
+  <li>Wait for Jenkins to restart</li>
+</ol>
+
+<hr/>
+
+<h2>Step 5 — Configure Allure Commandline Tool</h2>
+<ol>
+  <li>Go to: <b>Manage Jenkins → Tools</b></li>
+  <li>Scroll to <b>Allure Commandline</b> → click <b>Add Allure Commandline</b></li>
+  <li>Set:
+    <ul>
+      <li>Name: <code>allure</code></li>
+      <li>Install automatically: <b>checked</b></li>
+      <li>Version: select latest (e.g. <code>2.27.0</code>)</li>
+    </ul>
+  </li>
+  <li>Click <b>Save</b></li>
+</ol>
+
+<hr/>
+
+<h2>Step 6 — Create the Pipeline Job</h2>
+<ol>
+  <li>Go to: <b>Dashboard → New Item</b></li>
+  <li>Item name: <code>WillScot-Automation</code></li>
+  <li>Select: <b>Pipeline</b></li>
+  <li>Click <b>OK</b></li>
+</ol>
+
+<hr/>
+
+<h2>Step 7 — Configure the Pipeline Job</h2>
+
+<h3>General section:</h3>
+<ul>
+  <li>Description: <code>WillScot Playwright+Reqnroll automation</code></li>
+  <li>Check <b>Discard old builds</b> → Max builds to keep: <code>20</code></li>
+</ul>
+
+<h3>Build Triggers section:</h3>
+<ul>
+  <li>Leave <b>everything unchecked</b> — the pollSCM trigger is declared inside the Jenkinsfile</li>
+</ul>
+
+<h3>Pipeline section:</h3>
+<table>
+  <tr><th>Field</th><th>Value</th></tr>
+  <tr><td>Definition</td><td>Pipeline script from SCM</td></tr>
+  <tr><td>SCM</td><td>Git</td></tr>
+  <tr><td>Repository URL</td><td>https://github.com/jyothipodili/WIlscotAI</td></tr>
+  <tr><td>Credentials</td><td>- none - (public repo)</td></tr>
+  <tr><td>Branch Specifier</td><td>*/main</td></tr>
+  <tr><td>Script Path</td><td>Jenkinsfile</td></tr>
+  <tr><td>Lightweight checkout</td><td>unchecked</td></tr>
+</table>
+
+<p>Click <b>Save</b></p>
+
+<hr/>
+
+<h2>Step 8 — Run First Build (Activates Poll Timer)</h2>
+<ol>
+  <li>On the job page click <b>Build Now</b></li>
+  <li>Click the build number → <b>Console Output</b> to watch progress</li>
+  <li>Wait ~15 minutes for full run (restore + build + Playwright download + tests)</li>
+</ol>
+
+<div class="success">
+  Expected final line: <b>Finished: SUCCESS</b><br/>
+  Test result: Failed: 0, Passed: 14, Skipped: 3, Total: 17
+</div>
+
+<hr/>
+
+<h2>Step 9 — Verify Auto-Trigger on Git Push</h2>
+<p>On the <b>local developer machine</b>, push any change:</p>
+<pre>git commit --allow-empty -m "ci: verify remote Jenkins auto-trigger"
+git push origin main</pre>
+<p>Wait up to <b>2 minutes</b> → check the job page on remote Jenkins — a new build should appear automatically triggered by <b>SCM change</b>.</p>
+<p>Confirm polling is active: <b>Job page → Git Polling Log</b> (left sidebar)</p>
+
+<hr/>
+
+<h2>Troubleshooting</h2>
+<table>
+  <tr><th>Symptom</th><th>Fix</th></tr>
+  <tr><td>'git' is not recognized</td><td>Re-run Step 3 (PATH script) and restart Jenkins service</td></tr>
+  <tr><td>'dotnet' is not recognized</td><td>Re-run Step 3 (PATH script) and restart Jenkins service</td></tr>
+  <tr><td>ClassCastException on GitTool</td><td>Stop Jenkins → delete <code>C:\ProgramData\Jenkins\.jenkins\hudson.plugins.git.GitTool.xml</code> → Start Jenkins</td></tr>
+  <tr><td>Error 403 on Jenkins API calls</td><td>Use -SessionVariable / -WebSession in PowerShell to share cookies with crumb</td></tr>
+  <tr><td>Playwright download fails (400)</td><td>Retry — it auto-falls back to a mirror URL and succeeds</td></tr>
+  <tr><td>Build not auto-triggering</td><td>Check Git Polling Log; verify branch is */main not */master</td></tr>
+  <tr><td>Allure report step UNSTABLE</td><td>Expected — Jenkinsfile wraps it in catchError; test results still published</td></tr>
+</table>
+
+<hr/>
+
+<h2>What the Jenkinsfile Does (Already in Repo)</h2>
+<p>The file <code>Jenkinsfile</code> at the root of the repo is already configured. No changes needed.</p>
+<table>
+  <tr><th>Stage</th><th>Command</th></tr>
+  <tr><td>Checkout</td><td>Pulls latest code from GitHub main branch</td></tr>
+  <tr><td>Restore</td><td><code>dotnet restore</code></td></tr>
+  <tr><td>Build</td><td><code>dotnet build --configuration Release</code></td></tr>
+  <tr><td>Install Playwright</td><td><code>playwright.ps1 install chromium</code></td></tr>
+  <tr><td>Run Tests</td><td><code>dotnet test --configuration Release</code></td></tr>
+  <tr><td>Collect Allure Results</td><td>Copies results to allure-results folder</td></tr>
+  <tr><td>Publish Allure Report</td><td>Generates and archives Allure HTML report</td></tr>
+</table>
+<div class="note">Poll trigger: Jenkins checks GitHub every <b>2 minutes</b>. When a new commit is detected, it automatically starts a build.</div>
+
+</body>
+</html>
