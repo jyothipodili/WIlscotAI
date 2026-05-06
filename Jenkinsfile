@@ -9,12 +9,11 @@ pipeline {
         TEST_ENV                     = 'Prod'
 
         // Docker / Kubernetes
-        IMAGE_NAME    = 'willscot-automation'
-        IMAGE_TAG     = "${env.BUILD_NUMBER ?: 'latest'}"
+        IMAGE_NAME      = 'willscot-automation'
+        IMAGE_TAG       = "${env.BUILD_NUMBER ?: 'latest'}"
         DOCKER_HUB_USER = 'santhipodi'
-        DOCKER_IMAGE  = "santhipodi/${IMAGE_NAME}:${IMAGE_TAG}"
-        KUBECONFIG    = '/var/jenkins_home/.kube/config'
-        K8S_NAMESPACE = 'willscot'
+        DOCKER_IMAGE    = "santhipodi/willscot-automation:${env.BUILD_NUMBER ?: 'latest'}"
+        K8S_NAMESPACE   = 'willscot'
     }
 
     options {
@@ -24,9 +23,6 @@ pipeline {
     }
 
     triggers {
-        // Polls GitHub every 2 minutes — works on private networks where
-        // GitHub cannot reach Jenkins via webhook (private IP 10.x.x.x).
-        // Last verified: 2026-04-28
         pollSCM('H/2 * * * *')
     }
 
@@ -109,13 +105,12 @@ pipeline {
         // ── Docker Build ─────────────────────────────────────────────────────
         stage('Docker Build') {
             steps {
-                sh "docker build -t ${IMAGE_NAME}:latest -t ${DOCKER_IMAGE} ."
+                bat "docker build -t %IMAGE_NAME%:latest -t %DOCKER_IMAGE% ."
             }
         }
 
         // ── Docker Push ──────────────────────────────────────────────────────
-        // Credentials stored in Jenkins → Manage Jenkins → Credentials
-        // ID: dockerhub-credentials  (Username/Password kind, user: santhipodi)
+        // Credential ID: dockerhub-credentials (Username/Password, user: santhipodi)
         stage('Docker Push') {
             steps {
                 withCredentials([usernamePassword(
@@ -123,29 +118,31 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    sh '''
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push "$DOCKER_IMAGE"
+                    bat '''
+                        docker login -u %DOCKER_USER% -p %DOCKER_PASS%
+                        docker push %DOCKER_IMAGE%
                         docker logout
                     '''
                 }
             }
         }
 
-        // ── Kubernetes Deploy ─────────────────────────────────────────────────
+        // ── Kubernetes Deploy (only when K8S_DEPLOY=true) ─────────────────────
         stage('K8s Deploy') {
+            when { environment name: 'K8S_DEPLOY', value: 'true' }
             steps {
-                sh 'kubectl apply -f k8s/namespace.yaml'
-                sh "kubectl apply -f k8s/deployment.yaml -n ${K8S_NAMESPACE}"
-                sh "kubectl wait --for=condition=complete job/willscot-automation -n ${K8S_NAMESPACE} --timeout=300s"
+                bat 'kubectl apply -f k8s/namespace.yaml'
+                bat 'kubectl apply -f k8s/deployment.yaml -n %K8S_NAMESPACE%'
+                bat 'kubectl wait --for=condition=complete job/willscot-automation -n %K8S_NAMESPACE% --timeout=300s'
             }
         }
 
         stage('K8s Verify') {
+            when { environment name: 'K8S_DEPLOY', value: 'true' }
             steps {
-                sh "kubectl get jobs   -n ${K8S_NAMESPACE}"
-                sh "kubectl get pods   -n ${K8S_NAMESPACE}"
-                sh "kubectl logs -l app=willscot-automation -n ${K8S_NAMESPACE} --tail=50 || true"
+                bat 'kubectl get jobs -n %K8S_NAMESPACE%'
+                bat 'kubectl get pods -n %K8S_NAMESPACE%'
+                bat 'for /f "tokens=*" %%p in (\'kubectl get pods -n %K8S_NAMESPACE% -o name\') do kubectl logs %%p -n %K8S_NAMESPACE% --tail=50'
             }
         }
     }
