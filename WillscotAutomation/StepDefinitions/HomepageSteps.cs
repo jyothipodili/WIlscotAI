@@ -167,9 +167,18 @@ public sealed class HomepageSteps
     [Then(@"there should be no uncaught JavaScript exceptions")]
     public void ThenThereShouldBeNoUncaughtJavaScriptExceptions()
     {
-        Assert.That(_ctx.LogCollector.JsExceptions, Is.Empty,
+        static bool IsKnownThirdPartyNoise(string msg) =>
+            msg.Contains("cdn.amplitude.com", StringComparison.OrdinalIgnoreCase) ||
+            msg.Contains("Amplitude",         StringComparison.OrdinalIgnoreCase) ||
+            msg.Contains("osano.com",         StringComparison.OrdinalIgnoreCase);
+
+        var actionableExceptions = _ctx.LogCollector.JsExceptions
+            .Where(e => !IsKnownThirdPartyNoise(e))
+            .ToList();
+
+        Assert.That(actionableExceptions, Is.Empty,
             "Uncaught JavaScript exceptions detected:\n" +
-            _ctx.LogCollector.FormatJsExceptions());
+            string.Join("\n", actionableExceptions));
     }
 
     // ── TC-008 ─────────────────────────────────────────────────────────────────

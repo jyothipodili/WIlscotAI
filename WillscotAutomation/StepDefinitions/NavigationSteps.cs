@@ -89,7 +89,7 @@ public sealed class NavigationSteps
     private Microsoft.Playwright.ILocator? ResolveNavLinkByLabel(string label) =>
         label.ToLowerInvariant() switch
         {
-            "locations"                => _ctx.Page.Locator("a[href='/en/locations']").First,
+            "locations"                => _ctx.Page.Locator("a[href*='/locations']").First,
             "office trailers for sale" => _ctx.Page.Locator("a[href='/en/sales-showroom']").First,
             "about us"                 => _ctx.Page.Locator("a[href*='/en/about']").First,
             // NOTE: "products", "solutions", "storage containers", "office trailers"

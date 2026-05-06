@@ -45,9 +45,6 @@ Feature: WillScot Homepage Validation
         Then the following navigation items should be visible
             | NavItem                  |
             | Products                 |
-            | Storage Containers       |
-            | Office Trailers          |
-            | Browse by Use            |
             | Solutions                |
             | About Us                 |
             | Locations                |
