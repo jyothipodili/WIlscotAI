@@ -1,0 +1,57 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: willscot-automation
+  namespace: willscot
+  labels:
+    app: willscot-automation
+spec:
+  # Retry once on failure before marking Job as failed
+  backoffLimit: 1
+  # Auto-delete Job + pods 10 minutes after completion
+  ttlSecondsAfterFinished: 600
+  template:
+    metadata:
+      labels:
+        app: willscot-automation
+    spec:
+      restartPolicy: Never
+
+      containers:
+        - name: willscot-automation
+          # imagePullPolicy: Never  -> use the image already loaded into minikube
+          # Change to Always + a registry tag when pushing to Docker Hub / ECR
+          image: santhipodi/willscot-automation:latest
+          imagePullPolicy: Always
+
+          env:
+            - name: TEST_ENV
+              value: "Prod"
+            - name: BROWSER
+              value: "chromium"
+            - name: HEADLESS
+              value: "true"
+            - name: FILTER
+              value: ""
+
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+
+          # Playwright Chromium needs /dev/shm; map to memory-backed tmpfs
+          volumeMounts:
+            - name: dshm
+              mountPath: /dev/shm
+
+          securityContext:
+            allowPrivilegeEscalation: false
+
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: "2Gi"

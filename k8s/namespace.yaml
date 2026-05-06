@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: willscot
+  labels:
+    app: willscot-automation
+    team: qa

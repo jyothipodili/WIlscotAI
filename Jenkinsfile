@@ -6,8 +6,15 @@ pipeline {
         DOTNET_NOLOGO                = '1'
         PROJECT_DIR                  = 'WillscotAutomation'
         ALLURE_RESULTS               = 'WillscotAutomation/allure-results'
-        // Use Prod config: 120s navigation timeout, headless, targets willscot.com
         TEST_ENV                     = 'Prod'
+
+        // Docker / Kubernetes
+        IMAGE_NAME    = 'willscot-automation'
+        IMAGE_TAG     = "${env.BUILD_NUMBER ?: 'latest'}"
+        DOCKER_HUB_USER = 'santhipodi'
+        DOCKER_IMAGE  = "santhipodi/${IMAGE_NAME}:${IMAGE_TAG}"
+        KUBECONFIG    = '/var/jenkins_home/.kube/config'
+        K8S_NAMESPACE = 'willscot'
     }
 
     options {
@@ -51,8 +58,6 @@ pipeline {
         stage('Install Playwright Browsers') {
             steps {
                 dir("${PROJECT_DIR}") {
-                    // Installs only Chromium to keep build times short.
-                    // Change to 'install --with-deps' if Firefox/WebKit tests are added.
                     bat 'powershell -NonInteractive -ExecutionPolicy Bypass -File "bin\\Release\\net8.0\\playwright.ps1" install chromium'
                 }
             }
@@ -73,7 +78,6 @@ pipeline {
             }
             post {
                 always {
-                    // Publish NUnit XML results — NUnitXml.TestLogger emits the format this plugin expects
                     nunit testResultsPattern: 'WillscotAutomation/TestResults/nunit-results.xml',
                           failIfNoResults: false
                 }
@@ -82,9 +86,6 @@ pipeline {
 
         stage('Collect Allure Results') {
             steps {
-                // dotnet test may run the test host from the bin output directory,
-                // so allure-results can land there instead of the project root.
-                // Copy both locations into the single path the Allure plugin expects.
                 bat """
                     if exist "WillscotAutomation\\bin\\Release\\net8.0\\allure-results" (
                         xcopy /E /I /Y "WillscotAutomation\\bin\\Release\\net8.0\\allure-results" "WillscotAutomation\\allure-results\\"
@@ -95,8 +96,6 @@ pipeline {
 
         stage('Publish Allure Report') {
             steps {
-                // catchError keeps the build GREEN if the report step fails —
-                // only test failures should mark a build as failed.
                 catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
                     allure([
                         reportBuildPolicy: 'ALWAYS',
@@ -104,6 +103,49 @@ pipeline {
                         commandline      : 'allure'
                     ])
                 }
+            }
+        }
+
+        // ── Docker Build ─────────────────────────────────────────────────────
+        stage('Docker Build') {
+            steps {
+                sh "docker build -t ${IMAGE_NAME}:latest -t ${DOCKER_IMAGE} ."
+            }
+        }
+
+        // ── Docker Push ──────────────────────────────────────────────────────
+        // Credentials stored in Jenkins → Manage Jenkins → Credentials
+        // ID: dockerhub-credentials  (Username/Password kind, user: santhipodi)
+        stage('Docker Push') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push "$DOCKER_IMAGE"
+                        docker logout
+                    '''
+                }
+            }
+        }
+
+        // ── Kubernetes Deploy ─────────────────────────────────────────────────
+        stage('K8s Deploy') {
+            steps {
+                sh 'kubectl apply -f k8s/namespace.yaml'
+                sh "kubectl apply -f k8s/deployment.yaml -n ${K8S_NAMESPACE}"
+                sh "kubectl wait --for=condition=complete job/willscot-automation -n ${K8S_NAMESPACE} --timeout=300s"
+            }
+        }
+
+        stage('K8s Verify') {
+            steps {
+                sh "kubectl get jobs   -n ${K8S_NAMESPACE}"
+                sh "kubectl get pods   -n ${K8S_NAMESPACE}"
+                sh "kubectl logs -l app=willscot-automation -n ${K8S_NAMESPACE} --tail=50 || true"
             }
         }
     }
@@ -126,8 +168,8 @@ pipeline {
                 """.stripIndent().trim()
             }
             cleanWs(
-                cleanWhenSuccess: false,   // keep workspace on success for re-runs
-                cleanWhenFailure: false,   // keep workspace on failure to inspect artifacts
+                cleanWhenSuccess: false,
+                cleanWhenFailure: false,
                 cleanWhenAborted: true
             )
         }
