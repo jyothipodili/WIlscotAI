@@ -13,13 +13,15 @@ echo "  Headless    : ${HEADLESS}"
 echo "  Filter      : ${FILTER:-<none — all tests>}"
 echo "======================================================"
 
-# Patch allure.config.json: replace Windows absolute path with container path
-if [ -f /app/allure.config.json ]; then
-    jq '.allure.directory = "/app/allure-results"' /app/allure.config.json \
-        > /tmp/allure.config.patched.json \
-        && mv /tmp/allure.config.patched.json /app/allure.config.json
-    echo "  Allure dir  : /app/allure-results (patched)"
-fi
+# Patch allure.config.json in both the project root and the build output dir
+for CONFIG in /app/allure.config.json /app/bin/Release/net8.0/allure.config.json; do
+    if [ -f "$CONFIG" ]; then
+        jq '.allure.directory = "/app/allure-results"' "$CONFIG" \
+            > /tmp/allure.config.patched.json \
+            && mv /tmp/allure.config.patched.json "$CONFIG"
+    fi
+done
+echo "  Allure dir  : /app/allure-results (patched)"
 
 echo "======================================================"
 

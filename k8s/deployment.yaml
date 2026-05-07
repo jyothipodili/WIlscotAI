@@ -49,6 +49,8 @@ spec:
 
           securityContext:
             allowPrivilegeEscalation: false
+            capabilities:
+              add: ["SYS_ADMIN"]
 
       volumes:
         - name: dshm

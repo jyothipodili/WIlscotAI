@@ -23,12 +23,17 @@ public static class PlaywrightDriver
         // --disable-gpu is required in headless/Docker (no display adapter).
         // In headed/UI mode on Windows it forces software rendering → blank browser windows.
         if (ConfigReader.Headless)
+        {
             args.Add("--disable-gpu");
+            // Force headless Ozone platform on Linux — prevents Chromium trying to
+            // connect to X11/Wayland when there is no display server (e.g. K8s pods).
+            if (!OperatingSystem.IsWindows())
+                args.Add("--ozone-platform=headless");
+        }
 
         var launchOptions = new BrowserTypeLaunchOptions
         {
-            //Headless = ConfigReader.Headless,
-            Headless = false, // Force headless mode to avoid blank headed browsers on Windows
+            Headless = ConfigReader.Headless,
             SlowMo  = ConfigReader.SlowMo,
             Args    = args
         };
