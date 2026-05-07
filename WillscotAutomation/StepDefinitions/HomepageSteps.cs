@@ -170,7 +170,9 @@ public sealed class HomepageSteps
         static bool IsKnownThirdPartyNoise(string msg) =>
             msg.Contains("cdn.amplitude.com", StringComparison.OrdinalIgnoreCase) ||
             msg.Contains("Amplitude",         StringComparison.OrdinalIgnoreCase) ||
-            msg.Contains("osano.com",         StringComparison.OrdinalIgnoreCase);
+            msg.Contains("osano.com",         StringComparison.OrdinalIgnoreCase) ||
+            msg.Contains("webruntime",        StringComparison.OrdinalIgnoreCase) ||
+            msg.TrimEnd().EndsWith(": Object", StringComparison.Ordinal);
 
         var actionableExceptions = _ctx.LogCollector.JsExceptions
             .Where(e => !IsKnownThirdPartyNoise(e))

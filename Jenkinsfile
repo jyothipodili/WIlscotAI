@@ -16,6 +16,11 @@ pipeline {
         K8S_NAMESPACE   = 'willscot'
     }
 
+    parameters {
+        booleanParam(name: 'PUSH_IMAGE', defaultValue: false,
+            description: 'Push image to Docker Hub and deploy to K8s (leave unchecked for local/CI test-only runs)')
+    }
+
     options {
         timestamps()
         timeout(time: 60, unit: 'MINUTES')
@@ -112,6 +117,7 @@ pipeline {
         // ── Docker Push ──────────────────────────────────────────────────────
         // Credential ID: dockerhub-credentials (Username/Password, user: santhipodi)
         stage('Docker Push') {
+            when { expression { return params.PUSH_IMAGE } }
             steps {
                 withCredentials([usernamePassword(
                     credentialsId: 'dockerhub-credentials',
@@ -127,9 +133,9 @@ pipeline {
             }
         }
 
-        // ── Kubernetes Deploy (only when K8S_DEPLOY=true) ─────────────────────
+        // ── Kubernetes Deploy (only when PUSH_IMAGE=true) ─────────────────────
         stage('K8s Deploy') {
-            when { environment name: 'K8S_DEPLOY', value: 'true' }
+            when { expression { return params.PUSH_IMAGE } }
             steps {
                 bat 'kubectl apply -f k8s/namespace.yaml'
                 bat 'kubectl apply -f k8s/deployment.yaml -n %K8S_NAMESPACE%'
@@ -138,7 +144,7 @@ pipeline {
         }
 
         stage('K8s Verify') {
-            when { environment name: 'K8S_DEPLOY', value: 'true' }
+            when { expression { return params.PUSH_IMAGE } }
             steps {
                 bat 'kubectl get jobs -n %K8S_NAMESPACE%'
                 bat 'kubectl get pods -n %K8S_NAMESPACE%'

@@ -56,7 +56,7 @@ Feature: WillScot Homepage Validation
     @regression @navigation @TC006
     Scenario: TC-006 Verify clicking Locations navigates to locations page
         When I click the "Locations" navigation item
-        Then the URL should contain "/en/locations"
+        Then the URL should contain "/locations"
 
     # ──────────────────────────────────────────────────────────────────────────
     # TC-007  Office Trailers for Sale Navigation
@@ -64,7 +64,7 @@ Feature: WillScot Homepage Validation
     @regression @navigation @TC007
     Scenario: TC-007 Verify clicking Office Trailers for Sale navigates to sales showroom
         When I click the "Office Trailers for Sale" navigation item
-        Then the URL should contain "/en/sales-showroom"
+        Then the URL should contain "/sales-showroom"
 
     # ──────────────────────────────────────────────────────────────────────────
     # TC-008  Page Title & SEO Branding
@@ -79,7 +79,7 @@ Feature: WillScot Homepage Validation
     @regression @navigation @TC009
     Scenario: TC-009 Verify clicking About Us navigates to about page
         When I click the "About Us" navigation item
-        Then the URL should contain "/en/about"
+        Then the URL should contain "/about"
 
     # ──────────────────────────────────────────────────────────────────────────
     # TC-010  Request a Quote – Visibility
@@ -94,7 +94,7 @@ Feature: WillScot Homepage Validation
     @ignore @regression @TC011
     Scenario: TC-011 Verify clicking Request a Quote opens request quote page in same tab
         When I click the "Request a Quote" button in the header
-        Then the URL should contain "/en/request-quote"
+        Then the URL should contain "/request-quote"
 
     # ──────────────────────────────────────────────────────────────────────────
     # TC-012  Request Support – Navigation
@@ -102,7 +102,7 @@ Feature: WillScot Homepage Validation
     @ignore @regression @TC012
     Scenario: TC-012 Verify Request Support button navigates to request service page
         When I click the "Request Support" button
-        Then the URL should contain "/en/request-service"
+        Then the URL should contain "/request-service"
 
     # ──────────────────────────────────────────────────────────────────────────
     # TC-013  Storage Containers Card – Display
@@ -118,7 +118,7 @@ Feature: WillScot Homepage Validation
     @regression @products @TC014
     Scenario: TC-014 Verify clicking Storage Containers card navigates correctly
         When I click the Storage Containers product card
-        Then the URL should contain "/en/store-secure/storage-containers"
+        Then the URL should contain "/store-secure/storage-containers"
 
     # ──────────────────────────────────────────────────────────────────────────
     # TC-015  Product Images – HTTP Status

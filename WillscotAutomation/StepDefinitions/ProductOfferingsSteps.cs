@@ -53,7 +53,7 @@ public sealed class ProductOfferingsSteps
         await _ctx.Page.EvaluateAsync("window.scrollTo(0, document.body.scrollHeight / 3)");
 
         // Prefer exact href; fall back to partial match in case the path changes
-        var exactLink   = _ctx.Page.Locator("a[href='/en/store-secure/storage-containers']");
+        var exactLink   = _ctx.Page.Locator("a[href='/store-secure/storage-containers']");
         var partialLink = _ctx.Page.Locator("a[href*='storage-containers']");
         var linkToClick = await exactLink.CountAsync() > 0 ? exactLink.First : partialLink.First;
 

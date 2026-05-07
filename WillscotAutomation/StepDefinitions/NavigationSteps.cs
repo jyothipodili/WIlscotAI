@@ -90,8 +90,8 @@ public sealed class NavigationSteps
         label.ToLowerInvariant() switch
         {
             "locations"                => _ctx.Page.Locator("a[href*='/locations']").First,
-            "office trailers for sale" => _ctx.Page.Locator("a[href='/en/sales-showroom']").First,
-            "about us"                 => _ctx.Page.Locator("a[href*='/en/about']").First,
+            "office trailers for sale" => _ctx.Page.Locator("a[href='/sales-showroom']").First,
+            "about us"                 => _ctx.Page.Locator("a[href*='/about']").First,
             // NOTE: "products", "solutions", "storage containers", "office trailers"
             // are mega-menu triggers whose direct <a> links are hidden until the
             // dropdown is expanded. Fall back to GetNavItem() for these so Playwright
@@ -147,8 +147,8 @@ public sealed class NavigationSteps
         label.ToLowerInvariant() switch
         {
             // Use direct href links — more reliable than text matching
-            "request a quote" => _ctx.Page.Locator("a[href='/en/request-quote']").First,
-            "request support" => _ctx.Page.Locator("a[href='/en/request-service']").First,
+            "request a quote" => _ctx.Page.Locator("a[href='/request-quote']").First,
+            "request support" => _ctx.Page.Locator("a[href='/request-service']").First,
             _ => _ctx.Page.Locator(
                      $"a:has-text('{label}'), button:has-text('{label}')").First
         };
