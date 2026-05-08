@@ -76,6 +76,8 @@ pipeline {
         stage('Run Tests') {
             steps {
                 dir("${PROJECT_DIR}") {
+                    // Wipe previous allure output so only this run's results are collected
+                    bat 'if exist "bin\\Release\\net8.0\\allure-results" rd /s /q "bin\\Release\\net8.0\\allure-results"'
                     bat '''dotnet test ^
                         --no-build ^
                         --configuration Release ^
@@ -97,6 +99,7 @@ pipeline {
         stage('Collect Allure Results') {
             steps {
                 bat """
+                    if exist "WillscotAutomation\\allure-results" rd /s /q "WillscotAutomation\\allure-results"
                     if exist "WillscotAutomation\\bin\\Release\\net8.0\\allure-results" (
                         xcopy /E /I /Y "WillscotAutomation\\bin\\Release\\net8.0\\allure-results" "WillscotAutomation\\allure-results\\"
                     )
