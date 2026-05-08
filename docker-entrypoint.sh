@@ -41,7 +41,7 @@ TEST_ARGS=(
     "--logger:trx;LogFileName=/app/TestResults/results.trx"
     "--logger:console;verbosity=normal"
     "--"
-    "NUnit.NumberOfTestWorkers=4"
+    "NUnit.NumberOfTestWorkers=1"
 )
 
 # Append NUnit category filter if specified

@@ -127,11 +127,14 @@ public sealed class JenkinsDemoSteps(PlaywrightContext ctx)
     [Then(@"I record the pipeline progress until all stages complete or timeout after 90 minutes")]
     public async Task RecordUntilComplete()
     {
-        var timeout   = TimeSpan.FromMinutes(90);
-        var started   = DateTime.UtcNow;
-        var statusUrl = $"{_cfg.BaseUrl}/job/{_cfg.JobName}/{_buildNumber}/api/json?tree=building,result";
+        var timeout    = TimeSpan.FromMinutes(90);
+        var started    = DateTime.UtcNow;
+        var statusUrl  = $"{_cfg.BaseUrl}/job/{_cfg.JobName}/{_buildNumber}/api/json?tree=building,result";
+        var consoleUrl = $"{_cfg.BaseUrl}/job/{_cfg.JobName}/{_buildNumber}/consoleFull";
+        var pipelineUrl = $"{_cfg.BaseUrl}/job/{_cfg.JobName}/{_buildNumber}/";
+        int tick = 0;
 
-        Log.Information("[JenkinsDemo] Watching build #{N} — reloading every 30 s", _buildNumber);
+        Log.Information("[JenkinsDemo] Watching build #{N} — alternating pipeline/console every 30 s", _buildNumber);
 
         while (DateTime.UtcNow - started < timeout)
         {
@@ -154,11 +157,27 @@ public sealed class JenkinsDemoSteps(PlaywrightContext ctx)
                 _buildNumber, DateTime.UtcNow - started);
 
             await _page.WaitForTimeoutAsync(30_000);
-            await _page.ReloadAsync(new PageReloadOptions { WaitUntil = WaitUntilState.Load });
+
+            // Alternate: every 2nd tick show the live console log (test output), otherwise pipeline view
+            if (tick % 2 == 0)
+            {
+                await _page.GotoAsync(consoleUrl,
+                    new PageGotoOptions { WaitUntil = WaitUntilState.Load, Timeout = 30_000 });
+                // Scroll to bottom so latest test output is visible
+                await _page.EvaluateAsync("window.scrollTo(0, document.body.scrollHeight)");
+                await _page.WaitForTimeoutAsync(4_000);
+            }
+            else
+            {
+                await _page.GotoAsync(pipelineUrl,
+                    new PageGotoOptions { WaitUntil = WaitUntilState.Load, Timeout = 30_000 });
+            }
+            tick++;
         }
 
-        // Final reload — recording ends on the fully completed pipeline view
-        await _page.ReloadAsync(new PageReloadOptions { WaitUntil = WaitUntilState.Load });
+        // End on the completed pipeline stage view
+        await _page.GotoAsync(pipelineUrl,
+            new PageGotoOptions { WaitUntil = WaitUntilState.Load, Timeout = 30_000 });
         await _page.WaitForTimeoutAsync(3_000);
     }
 
