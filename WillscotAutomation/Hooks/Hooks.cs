@@ -139,10 +139,10 @@ public sealed partial class Hooks(IObjectContainer container, ScenarioContext sc
             TestRunTracker.RecordScenario(scenarioContext.ScenarioInfo.Title, scenarioContext.TestError == null);
 
         await TrackZephyrScenarioAsync(playwrightContext);
-        await playwrightContext.DisposeAsync();
 
-        // Rename the UUID-named video to the scenario title and attach to Allure
-        var videoPath = playwrightContext.VideoPath;
+        // Finalize video (closes page + browser context) BEFORE full dispose so the
+        // Allure test-case lifecycle is still open and can record the attachment in JSON.
+        var videoPath = await playwrightContext.FinalizeVideoAsync();
         if (videoPath != null && File.Exists(videoPath))
         {
             var safeTitle = string.Concat(scenarioContext.ScenarioInfo.Title
@@ -158,6 +158,9 @@ public sealed partial class Hooks(IObjectContainer container, ScenarioContext sc
                 Log.Warning(ex, "Could not process video for {Title}.", scenarioContext.ScenarioInfo.Title);
             }
         }
+
+        // Close browser + playwright now that video is attached
+        await playwrightContext.DisposeAsync();
     }
 
     // ── Private helpers ────────────────────────────────────────────────────────

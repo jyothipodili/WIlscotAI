@@ -1,19 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Jenkins Demo Recording runsettings
-  Runs ONLY the @jenkins-demo scenario which records the live pipeline in a browser.
-
-  Usage:
-    cd WillscotAutomation
-    dotnet test --no-build --configuration Release ^
-      --settings WillscotAutomation.JenkinsDemoRecording.runsettings
-
-  Before running:
-    1. Ensure Jenkins is accessible at the BaseUrl in appsettings.json (default: http://localhost:8080)
-    2. If Jenkins security is enabled, set Username and ApiToken in JenkinsDemoSettings
-    3. The video is saved to bin\Release\net8.0\videos\TC-DEMO-01_*.webm and attached to Allure
--->
 <RunSettings>
+
+  <!--
+    Runs ONLY the @jenkins-demo scenario.
+    Usage: dotnet test /no-build /configuration Release
+           /settings WillscotAutomation.JenkinsDemoRecording.runsettings
+    Before running: set JenkinsDemoSettings in appsettings.json (BaseUrl, Username, ApiToken).
+  -->
 
   <RunConfiguration>
     <MaxCpuCount>1</MaxCpuCount>

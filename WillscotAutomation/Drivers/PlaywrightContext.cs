@@ -14,6 +14,8 @@ public sealed class PlaywrightContext : IAsyncDisposable
     public LogCollector   LogCollector     { get; private set; } = null!;
     public string?        VideoPath        { get; private set; }
 
+    private bool _pageContextClosed;
+
     public async Task InitializeAsync()
     {
         Playwright    = await Microsoft.Playwright.Playwright.CreateAsync();
@@ -37,15 +39,29 @@ public sealed class PlaywrightContext : IAsyncDisposable
         LogCollector = new LogCollector(Page);
     }
 
-    public async ValueTask DisposeAsync()
+    // Closes page + browser context, finalizing the recorded video.
+    // Call this before DisposeAsync so the video path is ready while the
+    // Allure test-case lifecycle is still open and can accept attachments.
+    public async Task<string?> FinalizeVideoAsync()
     {
-        // Capture video path before closing the page — the file is finalized on page close
-        try { if (Page?.Video != null) VideoPath = await Page.Video.PathAsync(); } catch { /* swallow */ }
+        if (_pageContextClosed) return VideoPath;
 
+        try { if (Page?.Video != null) VideoPath = await Page.Video.PathAsync(); } catch { /* swallow */ }
         try { if (ApiContext    != null) await ApiContext.DisposeAsync();    } catch { /* swallow */ }
         try { if (Page          != null) await Page.CloseAsync();            } catch { /* swallow */ }
+        // Video is finalized when the browser context closes.
         try { if (BrowserContext != null) await BrowserContext.CloseAsync(); } catch { /* swallow */ }
-        try { if (Browser       != null) await Browser.CloseAsync();         } catch { /* swallow */ }
-        try { Playwright?.Dispose();                                          } catch { /* swallow */ }
+
+        _pageContextClosed = true;
+        return VideoPath;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (!_pageContextClosed)
+            await FinalizeVideoAsync();
+
+        try { if (Browser    != null) await Browser.CloseAsync(); } catch { /* swallow */ }
+        try { Playwright?.Dispose();                               } catch { /* swallow */ }
     }
 }

@@ -72,11 +72,16 @@ public static class AllureHelper
     public static void AttachVideo(string videoPath, string name = "Scenario Recording")
     {
         if (!File.Exists(videoPath)) return;
-        var bytes = File.ReadAllBytes(videoPath);
-        WriteToResultsDir(bytes, ".webm");
         Log.Debug("Video attached: {Path}", videoPath);
-        try { AllureApi.AddAttachment(name, "video/webm", bytes, ".webm"); }
-        catch { /* AsyncLocal context not available in Reqnroll AfterScenario — file saved above */ }
+        // Use file-path overload — avoids loading large videos into memory and lets
+        // Allure copy the file directly into allure-results with a proper JSON reference.
+        try { AllureApi.AddAttachment(name, "video/webm", videoPath); }
+        catch
+        {
+            // Fallback: copy bytes manually so the file exists even if the JSON reference failed
+            var bytes = File.ReadAllBytes(videoPath);
+            WriteToResultsDir(bytes, ".webm");
+        }
     }
 
     public static async Task AttachFailureBundle(
