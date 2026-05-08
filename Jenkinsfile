@@ -9,11 +9,14 @@ pipeline {
         TEST_ENV                     = 'Prod'
 
         // Docker / Kubernetes (all local — minikube, no registry push)
-        IMAGE_NAME    = 'willscot-automation'
-        DOCKER_HOST   = 'tcp://127.0.0.1:2375'
-        K8S_NAMESPACE = 'willscot'
-        MINIKUBE      = 'C:\\minikube\\minikube.exe'
-        KUBECTL       = 'C:\\minikube\\kubectl.exe'
+        IMAGE_NAME     = 'willscot-automation'
+        DOCKER_HOST    = 'tcp://127.0.0.1:2375'
+        K8S_NAMESPACE  = 'willscot'
+        MINIKUBE       = 'C:\\minikube\\minikube.exe'
+        KUBECTL        = 'C:\\minikube\\kubectl.exe'
+        // Point LocalSystem (Jenkins service) at the user-owned minikube profile and kubeconfig
+        MINIKUBE_HOME  = 'C:\\Users\\santhi.podili'
+        KUBECONFIG     = 'C:\\Users\\santhi.podili\\.kube\\config'
 
         // ── REMOTE (Docker Hub) — uncomment to re-enable remote push ──────────
         // IMAGE_TAG       = "${env.BUILD_NUMBER ?: 'latest'}"
