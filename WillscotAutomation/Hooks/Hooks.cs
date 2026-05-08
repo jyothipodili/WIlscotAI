@@ -140,6 +140,24 @@ public sealed partial class Hooks(IObjectContainer container, ScenarioContext sc
 
         await TrackZephyrScenarioAsync(playwrightContext);
         await playwrightContext.DisposeAsync();
+
+        // Rename the UUID-named video to the scenario title and attach to Allure
+        var videoPath = playwrightContext.VideoPath;
+        if (videoPath != null && File.Exists(videoPath))
+        {
+            var safeTitle = string.Concat(scenarioContext.ScenarioInfo.Title
+                .Split(Path.GetInvalidFileNameChars())).Replace(" ", "_");
+            var namedPath = Path.Combine(Path.GetDirectoryName(videoPath)!, $"{safeTitle}.webm");
+            try
+            {
+                File.Move(videoPath, namedPath, overwrite: true);
+                AllureHelper.AttachVideo(namedPath, $"Recording — {scenarioContext.ScenarioInfo.Title}");
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "Could not process video for {Title}.", scenarioContext.ScenarioInfo.Title);
+            }
+        }
     }
 
     // ── Private helpers ────────────────────────────────────────────────────────

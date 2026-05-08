@@ -55,6 +55,8 @@ public static class PlaywrightDriver
                 Width  = ConfigReader.ViewportWidth,
                 Height = ConfigReader.ViewportHeight
             },
+            RecordVideoDir  = "videos",
+            RecordVideoSize = new RecordVideoSize { Width = ConfigReader.ViewportWidth, Height = ConfigReader.ViewportHeight },
             IgnoreHTTPSErrors  = true,
             AcceptDownloads    = false,
             JavaScriptEnabled  = true,

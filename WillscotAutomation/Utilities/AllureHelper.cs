@@ -69,6 +69,16 @@ public static class AllureHelper
         AttachText(html, name, "text/html", ".html");
     }
 
+    public static void AttachVideo(string videoPath, string name = "Scenario Recording")
+    {
+        if (!File.Exists(videoPath)) return;
+        var bytes = File.ReadAllBytes(videoPath);
+        WriteToResultsDir(bytes, ".webm");
+        Log.Debug("Video attached: {Path}", videoPath);
+        try { AllureApi.AddAttachment(name, "video/webm", bytes, ".webm"); }
+        catch { /* AsyncLocal context not available in Reqnroll AfterScenario — file saved above */ }
+    }
+
     public static async Task AttachFailureBundle(
         IPage page, LogCollector logCollector, string scenarioTitle)
     {

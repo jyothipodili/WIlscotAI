@@ -12,6 +12,7 @@ public sealed class PlaywrightContext : IAsyncDisposable
     public IPage          Page             { get; private set; } = null!;
     public IAPIRequestContext ApiContext   { get; private set; } = null!;
     public LogCollector   LogCollector     { get; private set; } = null!;
+    public string?        VideoPath        { get; private set; }
 
     public async Task InitializeAsync()
     {
@@ -38,6 +39,9 @@ public sealed class PlaywrightContext : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        // Capture video path before closing the page — the file is finalized on page close
+        try { if (Page?.Video != null) VideoPath = await Page.Video.PathAsync(); } catch { /* swallow */ }
+
         try { if (ApiContext    != null) await ApiContext.DisposeAsync();    } catch { /* swallow */ }
         try { if (Page          != null) await Page.CloseAsync();            } catch { /* swallow */ }
         try { if (BrowserContext != null) await BrowserContext.CloseAsync(); } catch { /* swallow */ }
