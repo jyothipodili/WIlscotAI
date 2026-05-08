@@ -6,8 +6,10 @@ metadata:
   labels:
     app: willscot-automation
 spec:
-  # Retry once on failure before marking Job as failed
-  backoffLimit: 1
+  # Hard cap: kill pod and mark Job failed if not done in 15 min
+  activeDeadlineSeconds: 900
+  # No retry — test failures should fail the job immediately, not retry
+  backoffLimit: 0
   # Auto-delete Job + pods 10 minutes after completion
   ttlSecondsAfterFinished: 600
   template:

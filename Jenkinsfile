@@ -157,7 +157,7 @@ pipeline {
                 bat '"%KUBECTL%" delete job willscot-automation -n %K8S_NAMESPACE% --ignore-not-found'
                 bat '"%KUBECTL%" apply -f k8s/deployment.yaml -n %K8S_NAMESPACE%'
                 // Wait for job to finish (complete=pass or failed=fail); increase timeout for container runs
-                bat '"%KUBECTL%" wait --for=condition=complete job/willscot-automation -n %K8S_NAMESPACE% --timeout=600s || "%KUBECTL%" wait --for=condition=failed job/willscot-automation -n %K8S_NAMESPACE% --timeout=30s'
+                bat '"%KUBECTL%" wait --for=condition=complete job/willscot-automation -n %K8S_NAMESPACE% --timeout=900s || "%KUBECTL%" wait --for=condition=failed job/willscot-automation -n %K8S_NAMESPACE% --timeout=60s'
             }
         }
 
