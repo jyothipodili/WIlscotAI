@@ -13,6 +13,7 @@ pipeline {
         IMAGE_TAG       = "${env.BUILD_NUMBER ?: 'latest'}"
         DOCKER_HUB_USER = 'santhipodi'
         DOCKER_IMAGE    = "santhipodi/willscot-automation:${env.BUILD_NUMBER ?: 'latest'}"
+        DOCKER_HOST     = 'tcp://localhost:2375'
         K8S_NAMESPACE   = 'willscot'
     }
 
