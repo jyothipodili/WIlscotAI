@@ -12,6 +12,8 @@ pipeline {
         IMAGE_NAME    = 'willscot-automation'
         DOCKER_HOST   = 'tcp://127.0.0.1:2375'
         K8S_NAMESPACE = 'willscot'
+        MINIKUBE      = 'C:\\minikube\\minikube.exe'
+        KUBECTL       = 'C:\\minikube\\kubectl.exe'
 
         // ── REMOTE (Docker Hub) — uncomment to re-enable remote push ──────────
         // IMAGE_TAG       = "${env.BUILD_NUMBER ?: 'latest'}"
@@ -121,7 +123,7 @@ pipeline {
         // ── Load image into local minikube (no registry push) ────────────────
         stage('Minikube Image Load') {
             steps {
-                bat 'minikube image load willscot-automation:latest'
+                bat '"%MINIKUBE%" image load willscot-automation:latest'
             }
         }
 
@@ -148,19 +150,19 @@ pipeline {
         stage('K8s Deploy') {
             // REMOTE: add  when { expression { return params.PUSH_IMAGE } }
             steps {
-                bat 'kubectl apply -f k8s/namespace.yaml'
-                bat 'kubectl delete job willscot-automation -n %K8S_NAMESPACE% --ignore-not-found'
-                bat 'kubectl apply -f k8s/deployment.yaml -n %K8S_NAMESPACE%'
-                bat 'kubectl wait --for=condition=complete job/willscot-automation -n %K8S_NAMESPACE% --timeout=300s'
+                bat '"%KUBECTL%" apply -f k8s/namespace.yaml'
+                bat '"%KUBECTL%" delete job willscot-automation -n %K8S_NAMESPACE% --ignore-not-found'
+                bat '"%KUBECTL%" apply -f k8s/deployment.yaml -n %K8S_NAMESPACE%'
+                bat '"%KUBECTL%" wait --for=condition=complete job/willscot-automation -n %K8S_NAMESPACE% --timeout=300s'
             }
         }
 
         stage('K8s Verify') {
             // REMOTE: add  when { expression { return params.PUSH_IMAGE } }
             steps {
-                bat 'kubectl get jobs -n %K8S_NAMESPACE%'
-                bat 'kubectl get pods -n %K8S_NAMESPACE%'
-                bat 'for /f "tokens=*" %%p in (\'kubectl get pods -n %K8S_NAMESPACE% -o name\') do kubectl logs %%p -n %K8S_NAMESPACE% --tail=50'
+                bat '"%KUBECTL%" get jobs -n %K8S_NAMESPACE%'
+                bat '"%KUBECTL%" get pods -n %K8S_NAMESPACE%'
+                bat 'for /f "tokens=*" %%p in (\'"%KUBECTL%" get pods -n %K8S_NAMESPACE% -o name\') do "%KUBECTL%" logs %%p -n %K8S_NAMESPACE% --tail=50'
             }
         }
     }
