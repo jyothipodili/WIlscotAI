@@ -64,6 +64,10 @@ public static class ConfigReader
     public static string LogLevel =>
         Configuration[$"{_env}:TestSettings:LogLevel"] ?? "Information";
 
+    public static JenkinsSettings JenkinsDemoSettings =>
+        Configuration.GetSection("JenkinsDemoSettings").Get<JenkinsSettings>()
+        ?? new JenkinsSettings();
+
     /// <summary>Email notification settings — all values from the active environment's "EmailSettings" section.</summary>
     public static EmailSettings EmailSettings =>
         Configuration.GetSection($"{_env}:EmailSettings").Get<EmailSettings>()

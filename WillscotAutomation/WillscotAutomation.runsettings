@@ -16,8 +16,11 @@
     <!--
       Overrides [assembly: LevelOfParallelism(4)] at the runner level.
       Both values are 4 — kept in sync intentionally.
+      Excludes @jenkins-demo scenarios — run those separately with
+      WillscotAutomation.JenkinsDemoRecording.runsettings.
     -->
     <NumberOfTestWorkers>8</NumberOfTestWorkers>
+    <Where>cat != "jenkins-demo"</Where>
   </NUnit>
 
 </RunSettings>
