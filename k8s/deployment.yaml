@@ -19,10 +19,10 @@ spec:
 
       containers:
         - name: willscot-automation
-          # imagePullPolicy: Never  -> use the image already loaded into minikube
-          # Change to Always + a registry tag when pushing to Docker Hub / ECR
-          image: santhipodi/willscot-automation:latest
-          imagePullPolicy: Always
+          # Local minikube: image loaded via 'minikube image load', never pulled from registry
+          # REMOTE: change image to santhipodi/willscot-automation:latest and imagePullPolicy to Always
+          image: willscot-automation:latest
+          imagePullPolicy: Never
 
           env:
             - name: TEST_ENV

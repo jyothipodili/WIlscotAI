@@ -8,19 +8,22 @@ pipeline {
         ALLURE_RESULTS               = 'WillscotAutomation/allure-results'
         TEST_ENV                     = 'Prod'
 
-        // Docker / Kubernetes
-        IMAGE_NAME      = 'willscot-automation'
-        IMAGE_TAG       = "${env.BUILD_NUMBER ?: 'latest'}"
-        DOCKER_HUB_USER = 'santhipodi'
-        DOCKER_IMAGE    = "santhipodi/willscot-automation:${env.BUILD_NUMBER ?: 'latest'}"
-        DOCKER_HOST     = 'tcp://localhost:2375'
-        K8S_NAMESPACE   = 'willscot'
+        // Docker / Kubernetes (all local — minikube, no registry push)
+        IMAGE_NAME    = 'willscot-automation'
+        DOCKER_HOST   = 'tcp://127.0.0.1:2375'
+        K8S_NAMESPACE = 'willscot'
+
+        // ── REMOTE (Docker Hub) — uncomment to re-enable remote push ──────────
+        // IMAGE_TAG       = "${env.BUILD_NUMBER ?: 'latest'}"
+        // DOCKER_HUB_USER = 'santhipodi'
+        // DOCKER_IMAGE    = "santhipodi/willscot-automation:${env.BUILD_NUMBER ?: 'latest'}"
     }
 
-    parameters {
-        booleanParam(name: 'PUSH_IMAGE', defaultValue: false,
-            description: 'Push image to Docker Hub and deploy to K8s (leave unchecked for local/CI test-only runs)')
-    }
+    // ── REMOTE parameter — uncomment to re-enable push/deploy toggle ──────────
+    // parameters {
+    //     booleanParam(name: 'PUSH_IMAGE', defaultValue: false,
+    //         description: 'Push image to Docker Hub and deploy to K8s (leave unchecked for local/CI test-only runs)')
+    // }
 
     options {
         timestamps()
@@ -111,41 +114,49 @@ pipeline {
         // ── Docker Build ─────────────────────────────────────────────────────
         stage('Docker Build') {
             steps {
-                bat "docker build -t %IMAGE_NAME%:latest -t %DOCKER_IMAGE% ."
+                bat "docker build -t %IMAGE_NAME%:latest ."
             }
         }
 
-        // ── Docker Push ──────────────────────────────────────────────────────
-        // Credential ID: dockerhub-credentials (Username/Password, user: santhipodi)
-        stage('Docker Push') {
-            when { expression { return params.PUSH_IMAGE } }
+        // ── Load image into local minikube (no registry push) ────────────────
+        stage('Minikube Image Load') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-credentials',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    bat '''
-                        docker login -u %DOCKER_USER% -p %DOCKER_PASS%
-                        docker push %DOCKER_IMAGE%
-                        docker logout
-                    '''
-                }
+                bat 'minikube image load willscot-automation:latest'
             }
         }
 
-        // ── Kubernetes Deploy (only when PUSH_IMAGE=true) ─────────────────────
+        // ── REMOTE: Docker Push to Docker Hub ────────────────────────────────
+        // Credential ID: dockerhub-credentials (Username/Password, user: santhipodi)
+        // stage('Docker Push') {
+        //     when { expression { return params.PUSH_IMAGE } }
+        //     steps {
+        //         withCredentials([usernamePassword(
+        //             credentialsId: 'dockerhub-credentials',
+        //             usernameVariable: 'DOCKER_USER',
+        //             passwordVariable: 'DOCKER_PASS'
+        //         )]) {
+        //             bat '''
+        //                 docker login -u %DOCKER_USER% -p %DOCKER_PASS%
+        //                 docker push %DOCKER_IMAGE%
+        //                 docker logout
+        //             '''
+        //         }
+        //     }
+        // }
+
+        // ── Kubernetes Deploy ─────────────────────────────────────────────────
         stage('K8s Deploy') {
-            when { expression { return params.PUSH_IMAGE } }
+            // REMOTE: add  when { expression { return params.PUSH_IMAGE } }
             steps {
                 bat 'kubectl apply -f k8s/namespace.yaml'
+                bat 'kubectl delete job willscot-automation -n %K8S_NAMESPACE% --ignore-not-found'
                 bat 'kubectl apply -f k8s/deployment.yaml -n %K8S_NAMESPACE%'
                 bat 'kubectl wait --for=condition=complete job/willscot-automation -n %K8S_NAMESPACE% --timeout=300s'
             }
         }
 
         stage('K8s Verify') {
-            when { expression { return params.PUSH_IMAGE } }
+            // REMOTE: add  when { expression { return params.PUSH_IMAGE } }
             steps {
                 bat 'kubectl get jobs -n %K8S_NAMESPACE%'
                 bat 'kubectl get pods -n %K8S_NAMESPACE%'
