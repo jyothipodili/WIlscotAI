@@ -25,6 +25,14 @@ echo "  Allure dir  : /app/allure-results (patched)"
 
 echo "======================================================"
 
+# Start virtual display when running headed (no physical monitor in container)
+if [ "${HEADLESS}" = "false" ]; then
+    Xvfb :99 -screen 0 1920x1080x24 -ac +extension GLX &
+    export DISPLAY=:99
+    sleep 1
+    echo "  Virtual display started on :99"
+fi
+
 # Build dotnet test arguments
 TEST_ARGS=(
     "test" "WillscotAutomation.csproj"
@@ -33,7 +41,7 @@ TEST_ARGS=(
     "--logger:trx;LogFileName=/app/TestResults/results.trx"
     "--logger:console;verbosity=normal"
     "--"
-    "NUnit.NumberOfTestWorkers=1"
+    "NUnit.NumberOfTestWorkers=4"
 )
 
 # Append NUnit category filter if specified

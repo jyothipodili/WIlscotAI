@@ -73,28 +73,7 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
-            steps {
-                dir("${PROJECT_DIR}") {
-                    // Wipe previous allure output so only this run's results are collected
-                    bat 'if exist "bin\\Release\\net8.0\\allure-results" rd /s /q "bin\\Release\\net8.0\\allure-results"'
-                    bat '''dotnet test ^
-                        --no-build ^
-                        --configuration Release ^
-                        --settings WillscotAutomation.runsettings ^
-                        --logger "trx;LogFileName=jenkins-results.trx" ^
-                        --logger "nunit;LogFileName=nunit-results.xml" ^
-                        --results-directory TestResults ^
-                        -- NUnit.NumberOfTestWorkers=1'''
-                }
-            }
-            post {
-                always {
-                    nunit testResultsPattern: 'WillscotAutomation/TestResults/nunit-results.xml',
-                          failIfNoResults: false
-                }
-            }
-        }
+        // Tests run once inside the K8s container — no duplicate run here
 
         stage('Collect Allure Results') {
             steps {

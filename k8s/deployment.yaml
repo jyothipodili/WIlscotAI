@@ -32,17 +32,17 @@ spec:
             - name: BROWSER
               value: "chromium"
             - name: HEADLESS
-              value: "true"
+              value: "false"
             - name: FILTER
               value: ""
 
           resources:
             requests:
-              memory: "512Mi"
-              cpu: "250m"
+              memory: "1Gi"
+              cpu: "500m"
             limits:
-              memory: "2Gi"
-              cpu: "1000m"
+              memory: "4Gi"
+              cpu: "2000m"
 
           # Playwright Chromium needs /dev/shm; map to memory-backed tmpfs
           volumeMounts:
