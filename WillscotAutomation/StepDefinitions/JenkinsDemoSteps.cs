@@ -1,3 +1,6 @@
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 using Microsoft.Playwright;
 using Reqnroll;
 using Serilog;
@@ -7,11 +10,23 @@ using WillscotAutomation.Drivers;
 namespace WillscotAutomation.StepDefinitions;
 
 [Binding]
-public sealed class JenkinsDemoSteps(PlaywrightContext ctx)
+public sealed class JenkinsDemoSteps : IDisposable
 {
-    private readonly IPage           _page = ctx.Page;
-    private readonly JenkinsSettings _cfg  = ConfigReader.JenkinsDemoSettings;
+    private readonly IPage           _page;
+    private readonly JenkinsSettings _cfg;
+    private readonly HttpClient      _http;
     private int _buildNumber;
+
+    public JenkinsDemoSteps(PlaywrightContext ctx)
+    {
+        _page = ctx.Page;
+        _cfg  = ConfigReader.JenkinsDemoSettings;
+        _http = new HttpClient { BaseAddress = new Uri(_cfg.BaseUrl) };
+        var auth = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_cfg.Username}:{_cfg.ApiToken}"));
+        _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", auth);
+    }
+
+    public void Dispose() => _http.Dispose();
 
     // ── Steps ─────────────────────────────────────────────────────────────────
 
@@ -31,19 +46,28 @@ public sealed class JenkinsDemoSteps(PlaywrightContext ctx)
             await _page.WaitForURLAsync("**/job/**", new PageWaitForURLOptions { Timeout = 30_000 });
         }
 
-        // Pause so the stage-history view is fully visible in the recording
         await _page.WaitForTimeoutAsync(2_000);
         Log.Information("[JenkinsDemo] Job page ready: {Url}", _page.Url);
+    }
+
+    [Given(@"I load the latest build without triggering a new one")]
+    public async Task LoadLatestBuildWithoutTrigger()
+    {
+        _buildNumber = await FetchLastBuildNumberAsync();
+        Log.Information("[JenkinsDemo] Recording latest build #{N} (no trigger)", _buildNumber);
+
+        await _page.GotoAsync(
+            $"{_cfg.BaseUrl}/job/{_cfg.JobName}/{_buildNumber}/",
+            new PageGotoOptions { WaitUntil = WaitUntilState.Load, Timeout = 30_000 });
+        await _page.WaitForTimeoutAsync(2_000);
     }
 
     [Given(@"I trigger a new build and wait for it to start")]
     public async Task TriggerBuildAndWaitForStart()
     {
-        var apiUrl = $"{_cfg.BaseUrl}/job/{_cfg.JobName}/api/json?tree=lastBuild[number]";
-        var preBuild = await FetchLastBuildNumberAsync(apiUrl);
+        var preBuild = await FetchLastBuildNumberAsync();
         Log.Information("[JenkinsDemo] Last build before trigger: #{N}", preBuild);
 
-        // Try every known Jenkins selector for the Build Now sidebar link
         var triggered = false;
         foreach (var sel in new[]
         {
@@ -81,7 +105,7 @@ public sealed class JenkinsDemoSteps(PlaywrightContext ctx)
         var deadline = DateTime.UtcNow.AddSeconds(90);
         while (DateTime.UtcNow < deadline)
         {
-            var latest = await FetchLastBuildNumberAsync(apiUrl);
+            var latest = await FetchLastBuildNumberAsync();
             if (latest > preBuild)
             {
                 _buildNumber = latest;
@@ -91,14 +115,13 @@ public sealed class JenkinsDemoSteps(PlaywrightContext ctx)
             await _page.WaitForTimeoutAsync(3_000);
         }
 
-        _buildNumber = await FetchLastBuildNumberAsync(apiUrl);
+        _buildNumber = await FetchLastBuildNumberAsync();
         Log.Warning("[JenkinsDemo] Proceeding with build #{N}", _buildNumber);
     }
 
     [When(@"I navigate to the pipeline view for the running build")]
     public async Task NavigateToPipelineView()
     {
-        // Try Blue Ocean pipeline view (animated stage graph)
         var blueUrl =
             $"{_cfg.BaseUrl}/blue/organizations/jenkins/{_cfg.JobName}" +
             $"/detail/{_cfg.JobName}/{_buildNumber}/pipeline";
@@ -106,14 +129,11 @@ public sealed class JenkinsDemoSteps(PlaywrightContext ctx)
         await _page.GotoAsync(blueUrl,
             new PageGotoOptions { WaitUntil = WaitUntilState.Load, Timeout = 30_000 });
 
-        // Blue Ocean serves a "Oops! Not Found" error page (with the /blue/ URL intact)
-        // when it is not installed. Detect the error page by its content, not just the URL.
-        var notFoundCount = await _page.Locator("text=Not Found").CountAsync();
+        var notFoundCount  = await _page.Locator("text=Not Found").CountAsync();
         var blueOceanFailed = !_page.Url.Contains("/blue/") || notFoundCount > 0;
 
         if (blueOceanFailed)
         {
-            // Blue Ocean not installed — fall back to classic stage view
             Log.Information("[JenkinsDemo] Blue Ocean unavailable, using classic stage view");
             await _page.GotoAsync(
                 $"{_cfg.BaseUrl}/job/{_cfg.JobName}/{_buildNumber}/",
@@ -127,24 +147,36 @@ public sealed class JenkinsDemoSteps(PlaywrightContext ctx)
     [Then(@"I record the pipeline progress until all stages complete or timeout after 90 minutes")]
     public async Task RecordUntilComplete()
     {
-        var timeout    = TimeSpan.FromMinutes(90);
-        var started    = DateTime.UtcNow;
-        var statusUrl  = $"{_cfg.BaseUrl}/job/{_cfg.JobName}/{_buildNumber}/api/json?tree=building,result";
-        var consoleUrl = $"{_cfg.BaseUrl}/job/{_cfg.JobName}/{_buildNumber}/consoleFull";
+        var timeout     = TimeSpan.FromMinutes(90);
+        var started     = DateTime.UtcNow;
+        var consoleUrl  = $"{_cfg.BaseUrl}/job/{_cfg.JobName}/{_buildNumber}/consoleFull";
         var pipelineUrl = $"{_cfg.BaseUrl}/job/{_cfg.JobName}/{_buildNumber}/";
         int tick = 0;
 
-        Log.Information("[JenkinsDemo] Watching build #{N} — alternating pipeline/console every 30 s", _buildNumber);
+        Log.Information("[JenkinsDemo] Watching build #{N} — alternating pipeline/console every 15 s", _buildNumber);
 
         while (DateTime.UtcNow - started < timeout)
         {
-            var stillBuilding = await _page.EvaluateAsync<bool>(@"async (url) => {
-                try {
-                    const r = await fetch(url, { credentials: 'include' });
-                    const j = await r.json();
-                    return !!j.building;
-                } catch { return true; }
-            }", statusUrl);
+            // Navigate immediately — show activity every cycle
+            if (tick % 2 == 0)
+            {
+                await _page.GotoAsync(consoleUrl,
+                    new PageGotoOptions { WaitUntil = WaitUntilState.Load, Timeout = 30_000 });
+                // Scroll to bottom — wrapped in try-catch because the page may auto-refresh
+                try { await _page.EvaluateAsync("window.scrollTo(0, document.body.scrollHeight)"); }
+                catch { /* page refreshed mid-scroll — harmless */ }
+                await _page.WaitForTimeoutAsync(3_000);
+            }
+            else
+            {
+                await _page.GotoAsync(pipelineUrl,
+                    new PageGotoOptions { WaitUntil = WaitUntilState.Load, Timeout = 30_000 });
+                await _page.WaitForTimeoutAsync(3_000);
+            }
+            tick++;
+
+            // Use HttpClient so a page auto-refresh never kills the status check
+            var stillBuilding = await IsBuildRunningAsync();
 
             if (!stillBuilding)
             {
@@ -156,23 +188,7 @@ public sealed class JenkinsDemoSteps(PlaywrightContext ctx)
             Log.Information("[JenkinsDemo] Build #{N} running… elapsed {E}",
                 _buildNumber, DateTime.UtcNow - started);
 
-            await _page.WaitForTimeoutAsync(30_000);
-
-            // Alternate: every 2nd tick show the live console log (test output), otherwise pipeline view
-            if (tick % 2 == 0)
-            {
-                await _page.GotoAsync(consoleUrl,
-                    new PageGotoOptions { WaitUntil = WaitUntilState.Load, Timeout = 30_000 });
-                // Scroll to bottom so latest test output is visible
-                await _page.EvaluateAsync("window.scrollTo(0, document.body.scrollHeight)");
-                await _page.WaitForTimeoutAsync(4_000);
-            }
-            else
-            {
-                await _page.GotoAsync(pipelineUrl,
-                    new PageGotoOptions { WaitUntil = WaitUntilState.Load, Timeout = 30_000 });
-            }
-            tick++;
+            await _page.WaitForTimeoutAsync(15_000);
         }
 
         // End on the completed pipeline stage view
@@ -184,7 +200,6 @@ public sealed class JenkinsDemoSteps(PlaywrightContext ctx)
     [Then(@"I scroll through each pipeline stage to highlight individual results")]
     public async Task ScrollThroughStages()
     {
-        // Blue Ocean: click each stage node to expand its log panel
         var stageNodes = _page.Locator(
             "[class*='PipelineGraph'] button, [class*='pipeline-node'] button");
 
@@ -207,12 +222,10 @@ public sealed class JenkinsDemoSteps(PlaywrightContext ctx)
         }
         else
         {
-            // Classic view — smooth scroll to show all stages
-            await _page.EvaluateAsync(
-                "window.scrollTo({ top: document.body.scrollHeight / 2, behavior: 'smooth' })");
+            // Classic view — smooth scroll
+            try { await _page.EvaluateAsync("window.scrollTo({ top: document.body.scrollHeight / 2, behavior: 'smooth' })"); } catch { }
             await _page.WaitForTimeoutAsync(2_000);
-            await _page.EvaluateAsync(
-                "window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })");
+            try { await _page.EvaluateAsync("window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })"); } catch { }
             await _page.WaitForTimeoutAsync(3_000);
         }
     }
@@ -220,14 +233,12 @@ public sealed class JenkinsDemoSteps(PlaywrightContext ctx)
     [Then(@"I open the Allure report for the completed build and browse the results")]
     public async Task OpenAllureReport()
     {
-        // Jenkins Allure plugin publishes the report under /allure-report/ or /allure/
         var allureUrl = $"{_cfg.BaseUrl}/job/{_cfg.JobName}/{_buildNumber}/allure-report/";
         Log.Information("[JenkinsDemo] Opening Allure report: {Url}", allureUrl);
 
         await _page.GotoAsync(allureUrl,
             new PageGotoOptions { WaitUntil = WaitUntilState.Load, Timeout = 30_000 });
 
-        // If the plugin uses a different path, try the alternative
         if (_page.Url.Contains("404") || await _page.Locator("h1:has-text('404')").CountAsync() > 0)
         {
             var altUrl = $"{_cfg.BaseUrl}/job/{_cfg.JobName}/{_buildNumber}/allure/";
@@ -236,15 +247,10 @@ public sealed class JenkinsDemoSteps(PlaywrightContext ctx)
                 new PageGotoOptions { WaitUntil = WaitUntilState.Load, Timeout = 30_000 });
         }
 
-        // Wait for the Allure SPA to render
         await _page.WaitForTimeoutAsync(5_000);
-
-        // Show the summary section
-        await _page.EvaluateAsync(
-            "window.scrollTo({ top: 300, behavior: 'smooth' })");
+        try { await _page.EvaluateAsync("window.scrollTo({ top: 300, behavior: 'smooth' })"); } catch { }
         await _page.WaitForTimeoutAsync(2_000);
 
-        // Try clicking on the first test case to show its detail (screenshot / video)
         try
         {
             var firstTest = _page.Locator(".test-result__info, .allure-report .test-case").First;
@@ -252,33 +258,38 @@ public sealed class JenkinsDemoSteps(PlaywrightContext ctx)
             {
                 await firstTest.ClickAsync(new LocatorClickOptions { Timeout = 5_000 });
                 await _page.WaitForTimeoutAsync(3_000);
-                // Scroll down to show the attached video / screenshot
-                await _page.EvaluateAsync(
-                    "window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })");
+                try { await _page.EvaluateAsync("window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })"); } catch { }
                 await _page.WaitForTimeoutAsync(4_000);
             }
         }
         catch { /* Allure UI may differ between versions — skip */ }
 
-        // Final pause so the last frame of the recording is clearly the Allure report
         await _page.WaitForTimeoutAsync(5_000);
         Log.Information("[JenkinsDemo] Demo recording complete");
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    private async Task<int> FetchLastBuildNumberAsync(string apiUrl)
+    private async Task<int> FetchLastBuildNumberAsync()
     {
         try
         {
-            return await _page.EvaluateAsync<int>(@"async (url) => {
-                try {
-                    const r = await fetch(url, { credentials: 'include' });
-                    const j = await r.json();
-                    return j.lastBuild?.number ?? 0;
-                } catch { return 0; }
-            }", apiUrl);
+            var json = await _http.GetStringAsync($"/job/{_cfg.JobName}/api/json?tree=lastBuild[number]");
+            using var doc = JsonDocument.Parse(json);
+            return doc.RootElement.GetProperty("lastBuild").GetProperty("number").GetInt32();
         }
         catch { return 0; }
+    }
+
+    private async Task<bool> IsBuildRunningAsync()
+    {
+        try
+        {
+            var json = await _http.GetStringAsync(
+                $"/job/{_cfg.JobName}/{_buildNumber}/api/json?tree=building,result");
+            using var doc = JsonDocument.Parse(json);
+            return doc.RootElement.GetProperty("building").GetBoolean();
+        }
+        catch { return true; }
     }
 }

@@ -12,3 +12,11 @@ Feature: Jenkins Pipeline Demo Recording
         Then I record the pipeline progress until all stages complete or timeout after 90 minutes
         And I scroll through each pipeline stage to highlight individual results
         And I open the Allure report for the completed build and browse the results
+
+    @ignore @jenkins-demo
+    Scenario: TC-DEMO-02 Record current Jenkins pipeline build starting from login
+        Given I open Jenkins job "WillScot-Automation" and authenticate if prompted
+        And I load the latest build without triggering a new one
+        Then I record the pipeline progress until all stages complete or timeout after 90 minutes
+        And I scroll through each pipeline stage to highlight individual results
+        And I open the Allure report for the completed build and browse the results

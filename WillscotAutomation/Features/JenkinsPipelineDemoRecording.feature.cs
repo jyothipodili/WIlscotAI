@@ -126,6 +126,47 @@ namespace WillscotAutomation.Features
             }
             await this.ScenarioCleanupAsync();
         }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("TC-DEMO-02 Record current Jenkins pipeline build starting from login")]
+        [NUnit.Framework.IgnoreAttribute("Ignored scenario")]
+        [NUnit.Framework.CategoryAttribute("jenkins-demo")]
+        public async System.Threading.Tasks.Task TC_DEMO_02RecordCurrentJenkinsPipelineBuildStartingFromLogin()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "ignore",
+                    "jenkins-demo"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("TC-DEMO-02 Record current Jenkins pipeline build starting from login", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 17
+    this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 18
+        await testRunner.GivenAsync("I open Jenkins job \"WillScot-Automation\" and authenticate if prompted", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 19
+        await testRunner.AndAsync("I load the latest build without triggering a new one", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 20
+        await testRunner.ThenAsync(("I record the pipeline progress until all stages complete or timeout after 90 minu" +
+                        "tes"), ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 21
+        await testRunner.AndAsync("I scroll through each pipeline stage to highlight individual results", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 22
+        await testRunner.AndAsync("I open the Allure report for the completed build and browse the results", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
     }
 }
 #pragma warning restore

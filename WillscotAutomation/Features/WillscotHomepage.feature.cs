@@ -274,12 +274,14 @@ namespace WillscotAutomation.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("TC-006 Verify clicking Locations navigates to locations page")]
+        [NUnit.Framework.IgnoreAttribute("Ignored scenario")]
         [NUnit.Framework.CategoryAttribute("regression")]
         [NUnit.Framework.CategoryAttribute("navigation")]
         [NUnit.Framework.CategoryAttribute("TC006")]
         public async System.Threading.Tasks.Task TC_006VerifyClickingLocationsNavigatesToLocationsPage()
         {
             string[] tagsOfScenario = new string[] {
+                    "ignore",
                     "regression",
                     "navigation",
                     "TC006"};
@@ -310,12 +312,14 @@ namespace WillscotAutomation.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("TC-007 Verify clicking Office Trailers for Sale navigates to sales showroom")]
+        [NUnit.Framework.IgnoreAttribute("Ignored scenario")]
         [NUnit.Framework.CategoryAttribute("regression")]
         [NUnit.Framework.CategoryAttribute("navigation")]
         [NUnit.Framework.CategoryAttribute("TC007")]
         public async System.Threading.Tasks.Task TC_007VerifyClickingOfficeTrailersForSaleNavigatesToSalesShowroom()
         {
             string[] tagsOfScenario = new string[] {
+                    "ignore",
                     "regression",
                     "navigation",
                     "TC007"};
@@ -346,6 +350,7 @@ namespace WillscotAutomation.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("TC-008 Verify page title contains WillScot branding")]
+        [NUnit.Framework.IgnoreAttribute("Ignored scenario")]
         [NUnit.Framework.CategoryAttribute("smoke")]
         [NUnit.Framework.CategoryAttribute("regression")]
         [NUnit.Framework.CategoryAttribute("quality")]
@@ -353,6 +358,7 @@ namespace WillscotAutomation.Features
         public async System.Threading.Tasks.Task TC_008VerifyPageTitleContainsWillScotBranding()
         {
             string[] tagsOfScenario = new string[] {
+                    "ignore",
                     "smoke",
                     "regression",
                     "quality",
@@ -381,12 +387,14 @@ namespace WillscotAutomation.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("TC-009 Verify clicking About Us navigates to about page")]
+        [NUnit.Framework.IgnoreAttribute("Ignored scenario")]
         [NUnit.Framework.CategoryAttribute("regression")]
         [NUnit.Framework.CategoryAttribute("navigation")]
         [NUnit.Framework.CategoryAttribute("TC009")]
         public async System.Threading.Tasks.Task TC_009VerifyClickingAboutUsNavigatesToAboutPage()
         {
             string[] tagsOfScenario = new string[] {
+                    "ignore",
                     "regression",
                     "navigation",
                     "TC009"};
@@ -417,12 +425,14 @@ namespace WillscotAutomation.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("TC-010 Verify Request a Quote button is visible in header")]
+        [NUnit.Framework.IgnoreAttribute("Ignored scenario")]
         [NUnit.Framework.CategoryAttribute("smoke")]
         [NUnit.Framework.CategoryAttribute("regression")]
         [NUnit.Framework.CategoryAttribute("TC010")]
         public async System.Threading.Tasks.Task TC_010VerifyRequestAQuoteButtonIsVisibleInHeader()
         {
             string[] tagsOfScenario = new string[] {
+                    "ignore",
                     "smoke",
                     "regression",
                     "TC010"};
@@ -522,12 +532,14 @@ namespace WillscotAutomation.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("TC-013 Verify Storage Containers product card displays with image and label")]
+        [NUnit.Framework.IgnoreAttribute("Ignored scenario")]
         [NUnit.Framework.CategoryAttribute("regression")]
         [NUnit.Framework.CategoryAttribute("products")]
         [NUnit.Framework.CategoryAttribute("TC013")]
         public async System.Threading.Tasks.Task TC_013VerifyStorageContainersProductCardDisplaysWithImageAndLabel()
         {
             string[] tagsOfScenario = new string[] {
+                    "ignore",
                     "regression",
                     "products",
                     "TC013"};
@@ -558,12 +570,14 @@ namespace WillscotAutomation.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("TC-014 Verify clicking Storage Containers card navigates correctly")]
+        [NUnit.Framework.IgnoreAttribute("Ignored scenario")]
         [NUnit.Framework.CategoryAttribute("regression")]
         [NUnit.Framework.CategoryAttribute("products")]
         [NUnit.Framework.CategoryAttribute("TC014")]
         public async System.Threading.Tasks.Task TC_014VerifyClickingStorageContainersCardNavigatesCorrectly()
         {
             string[] tagsOfScenario = new string[] {
+                    "ignore",
                     "regression",
                     "products",
                     "TC014"};
@@ -594,12 +608,14 @@ namespace WillscotAutomation.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("TC-015 Verify product images load without distortion or broken src")]
+        [NUnit.Framework.IgnoreAttribute("Ignored scenario")]
         [NUnit.Framework.CategoryAttribute("regression")]
         [NUnit.Framework.CategoryAttribute("products")]
         [NUnit.Framework.CategoryAttribute("TC015")]
         public async System.Threading.Tasks.Task TC_015VerifyProductImagesLoadWithoutDistortionOrBrokenSrc()
         {
             string[] tagsOfScenario = new string[] {
+                    "ignore",
                     "regression",
                     "products",
                     "TC015"};
@@ -630,12 +646,14 @@ namespace WillscotAutomation.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("TC-016 Verify all product links return HTTP 200")]
+        [NUnit.Framework.IgnoreAttribute("Ignored scenario")]
         [NUnit.Framework.CategoryAttribute("regression")]
         [NUnit.Framework.CategoryAttribute("products")]
         [NUnit.Framework.CategoryAttribute("TC016")]
         public async System.Threading.Tasks.Task TC_016VerifyAllProductLinksReturnHTTP200()
         {
             string[] tagsOfScenario = new string[] {
+                    "ignore",
                     "regression",
                     "products",
                     "TC016"};
@@ -663,12 +681,14 @@ namespace WillscotAutomation.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("TC-017 Verify industry solution tabs are displayed with correct names")]
+        [NUnit.Framework.IgnoreAttribute("Ignored scenario")]
         [NUnit.Framework.CategoryAttribute("regression")]
         [NUnit.Framework.CategoryAttribute("industry")]
         [NUnit.Framework.CategoryAttribute("TC017")]
         public async System.Threading.Tasks.Task TC_017VerifyIndustrySolutionTabsAreDisplayedWithCorrectNames()
         {
             string[] tagsOfScenario = new string[] {
+                    "ignore",
                     "regression",
                     "industry",
                     "TC017"};

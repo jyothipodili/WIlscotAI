@@ -11,9 +11,12 @@ pipeline {
         K8S_NAMESPACE               = 'willscot'
         MINIKUBE                    = 'C:\\minikube\\minikube.exe'
         KUBECTL                     = 'C:\\minikube\\kubectl.exe'
-        MINIKUBE_HOME               = 'C:\\Users\\santhi.podili'
-        KUBECONFIG                  = 'C:\\Users\\santhi.podili\\.kube\\config'
-        // Artifact paths relative to workspace root
+
+        // Flattened kubeconfig — certs embedded, accessible by Jenkins service account.
+        // Re-generate after every `minikube start`:
+        // kubectl config view --raw --flatten > C:\ProgramData\Jenkins\.kube\config
+        KUBECONFIG                  = 'C:\\ProgramData\\Jenkins\\.kube\\config'
+
         ALLURE_RESULTS              = 'allure-results'
         ALLURE_REPORT               = 'allure-report'
         TEST_RESULTS_DIR            = 'TestResults'
@@ -40,8 +43,6 @@ pipeline {
         }
 
         // ── 2. Build & Package ───────────────────────────────────────────────────
-        // Build the .NET project and bake it into a Docker image.
-        // Tests do NOT run here — they run inside the K8s pod.
         stage('Build & Package') {
             steps {
                 dir("${PROJECT_DIR}") {
@@ -52,86 +53,130 @@ pipeline {
             }
         }
 
-        // ── 3. Load image into Minikube ──────────────────────────────────────────
+        // ── 3. Minikube Image Load ───────────────────────────────────────────────
         stage('Minikube Image Load') {
             steps {
                 bat '"%MINIKUBE%" image load willscot-automation:latest'
             }
         }
 
-        // ── 4. Deploy K8s Job ────────────────────────────────────────────────────
-        stage('K8s Deploy') {
+        // ── 4. Validate Minikube Connection ──────────────────────────────────────
+        stage('Validate Minikube Connection') {
             steps {
                 bat '"%MINIKUBE%" update-context'
-                bat '"%KUBECTL%" apply -f k8s/namespace.yaml --validate=false'
-                // Delete any previous job so the new one starts clean
-                bat '"%KUBECTL%" delete job willscot-automation -n %K8S_NAMESPACE% --ignore-not-found'
-                bat '"%KUBECTL%" apply -f k8s/deployment.yaml -n %K8S_NAMESPACE% --validate=false'
-                echo 'K8s job submitted — waiting for pod to start...'
-                bat '"%KUBECTL%" wait --for=condition=ready pod -l job-name=willscot-automation -n %K8S_NAMESPACE% --timeout=120s || echo Pod not yet ready — will poll in next stage'
+                bat '"%KUBECTL%" config current-context'
+                retry(3) {
+                    bat '"%KUBECTL%" get nodes --request-timeout=30s'
+                }
+                bat '"%KUBECTL%" get ns'
             }
         }
 
-        // ── 5. Run Tests (K8s) ───────────────────────────────────────────────────
-        // Stream live logs while waiting; mark UNSTABLE (not FAILURE) if tests fail
-        // so downstream artifact stages still run.
+        // ── 5. K8s Deploy ────────────────────────────────────────────────────────
+        stage('K8s Deploy') {
+            steps {
+                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+
+                    retry(3) {
+                        bat '"%KUBECTL%" apply -f k8s/namespace.yaml --validate=false'
+                    }
+
+                    bat '"%KUBECTL%" delete job willscot-automation -n %K8S_NAMESPACE% --ignore-not-found'
+
+                    retry(3) {
+                        bat '"%KUBECTL%" apply -f k8s/deployment.yaml -n %K8S_NAMESPACE% --validate=false'
+                    }
+
+                    echo 'K8s job submitted — waiting for pod to become ready...'
+                    bat '"%KUBECTL%" wait --for=condition=ready pod -l job-name=willscot-automation -n %K8S_NAMESPACE% --timeout=180s'
+
+                    bat '"%KUBECTL%" get pods -n %K8S_NAMESPACE% -l job-name=willscot-automation -o wide'
+                }
+            }
+        }
+
+        // ── 6. Run Tests (K8s) ───────────────────────────────────────────────────
         stage('Run Tests (K8s)') {
             steps {
                 script {
-                    // Stream logs in background while polling for completion
+
+                    echo "Showing pod list before wait..."
+                    bat '"%KUBECTL%" get pods -n %K8S_NAMESPACE% -l job-name=willscot-automation -o wide'
+                    bat(script: '"%KUBECTL%" describe job willscot-automation -n %K8S_NAMESPACE%', returnStatus: true)
+                    bat(script: '"%KUBECTL%" describe pod -n %K8S_NAMESPACE% -l job-name=willscot-automation', returnStatus: true)
+
+                    echo "Streaming logs (all pods)..."
                     bat(
-                        script: 'for /f "tokens=*" %%p in (\'"%KUBECTL%" get pods -n %K8S_NAMESPACE% -l job-name=willscot-automation -o name\') do "%KUBECTL%" logs -f %%p -n %K8S_NAMESPACE%',
+                        script: '"%KUBECTL%" logs -n %K8S_NAMESPACE% -l job-name=willscot-automation --all-containers=true --tail=-1',
                         returnStatus: true
                     )
 
+                    echo "Waiting for Job to complete or fail (max 15 min)..."
                     def rc = bat(
-                        script: '"%KUBECTL%" wait --for=condition=complete job/willscot-automation -n %K8S_NAMESPACE% --timeout=1800s',
+                        script: '"%KUBECTL%" wait job/willscot-automation -n %K8S_NAMESPACE% --for=condition=complete --for=condition=failed --timeout=900s',
                         returnStatus: true
                     )
+
+                    echo "Showing pod list after wait..."
+                    bat '"%KUBECTL%" get pods -n %K8S_NAMESPACE% -l job-name=willscot-automation -o wide'
+                    bat(script: '"%KUBECTL%" describe job willscot-automation -n %K8S_NAMESPACE%', returnStatus: true)
+                    bat(script: '"%KUBECTL%" describe pod -n %K8S_NAMESPACE% -l job-name=willscot-automation', returnStatus: true)
+
+                    echo "Final logs after job finished..."
+                    bat(
+                        script: '"%KUBECTL%" logs -n %K8S_NAMESPACE% -l job-name=willscot-automation --all-containers=true --tail=-1',
+                        returnStatus: true
+                    )
+
                     if (rc != 0) {
-                        bat(
-                            script: '"%KUBECTL%" wait --for=condition=failed job/willscot-automation -n %K8S_NAMESPACE% --timeout=60s',
+                        unstable("Job did not finish within timeout OR job failed. Check logs above.")
+                    } else {
+                        def failRc = bat(
+                            script: '"%KUBECTL%" wait --for=condition=failed job/willscot-automation -n %K8S_NAMESPACE% --timeout=5s',
                             returnStatus: true
                         )
-                        unstable(message: 'One or more tests failed — review Allure report and Word report below.')
+                        if (failRc == 0) {
+                            unstable("Tests failed — check Allure report.")
+                        }
                     }
                 }
             }
         }
 
-        // ── 6. Collect Artifacts from K8s Pod ───────────────────────────────────
-        // kubectl cp pulls allure-results (contains screenshots, videos, traces as
-        // Allure attachments) and the TRX file from the completed pod before TTL
-        // cleans it up.
+        // ── 7. Collect Artifacts ─────────────────────────────────────────────────
         stage('Collect Artifacts') {
             steps {
-                // Clean previous run
-                bat '''
-                    if exist "allure-results" rd /s /q "allure-results"
-                    if exist "TestResults"    rd /s /q "TestResults"
-                    mkdir "allure-results"
-                    mkdir "TestResults"
-                '''
-                // Capture pod name and copy artifacts out
-                bat '''
-                    setlocal enabledelayedexpansion
-                    "%KUBECTL%" get pods -n %K8S_NAMESPACE% -l job-name=willscot-automation ^
-                        --no-headers -o custom-columns=NAME:.metadata.name 1>pod.txt 2>nul
-                    for /f "usebackq tokens=1" %%i in (pod.txt) do set POD=%%i
-                    del pod.txt
-                    if "!POD!"=="" (
-                        echo ERROR: No pod found for willscot-automation job
-                        exit /b 1
-                    )
-                    echo Copying from pod: !POD!
-                    "%KUBECTL%" cp %K8S_NAMESPACE%/!POD!:/app/allure-results  allure-results  || echo WARNING: allure-results copy incomplete
-                    "%KUBECTL%" cp %K8S_NAMESPACE%/!POD!:/app/TestResults     TestResults     || echo WARNING: TestResults copy incomplete
-                    endlocal
-                '''
+                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+
+                    bat '''
+                        if exist "allure-results" rd /s /q "allure-results"
+                        if exist "TestResults"    rd /s /q "TestResults"
+                        mkdir "allure-results"
+                        mkdir "TestResults"
+                    '''
+
+                    bat '''
+                        setlocal enabledelayedexpansion
+
+                        for /f "delims=" %%i in ('"%KUBECTL%" get pods -n %K8S_NAMESPACE% -l job-name=willscot-automation -o jsonpath="{.items[0].metadata.name}"') do set POD=%%i
+
+                        if "!POD!"=="" (
+                            echo ERROR: No pod found for willscot-automation job
+                            exit /b 1
+                        )
+
+                        echo Copying artifacts from pod: !POD!
+
+                        "%KUBECTL%" cp %K8S_NAMESPACE%/!POD!:/app/allure-results allure-results || echo WARNING: allure-results copy incomplete
+                        "%KUBECTL%" cp %K8S_NAMESPACE%/!POD!:/app/TestResults    TestResults    || echo WARNING: TestResults copy incomplete
+
+                        endlocal
+                    '''
+                }
             }
         }
 
-        // ── 7. Publish Allure Report ─────────────────────────────────────────────
+        // ── 8. Allure Report ─────────────────────────────────────────────────────
         stage('Allure Report') {
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
@@ -144,9 +189,7 @@ pipeline {
             }
         }
 
-        // ── 8. Word Executive Report ─────────────────────────────────────────────
-        // Generates a .docx with test summary, pass/fail table, screenshot links,
-        // and pipeline explanation — ready to send to a manager.
+        // ── 9. Word Report ───────────────────────────────────────────────────────
         stage('Word Report') {
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
@@ -163,24 +206,19 @@ pipeline {
             }
         }
 
-        // ── 9. Archive All Evidence ──────────────────────────────────────────────
+        // ── 10. Archive Evidence ─────────────────────────────────────────────────
         stage('Archive Evidence') {
             steps {
-                // Allure HTML report (Jenkins Allure plugin also publishes it, but
-                // archiving gives a downloadable zip for email/sharing)
-                archiveArtifacts artifacts: 'allure-report/**',                   allowEmptyArchive: true
-                // Raw Allure results — includes embedded screenshots, videos, traces
-                archiveArtifacts artifacts: 'allure-results/**',                  allowEmptyArchive: true
-                // TRX + any extra TestResults files
-                archiveArtifacts artifacts: 'TestResults/**',                     allowEmptyArchive: true
-                // Word executive report
-                archiveArtifacts artifacts: 'WillScot_ExecutiveReport_*.docx',   allowEmptyArchive: true
+                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                    archiveArtifacts artifacts: 'allure-report/**',                 allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'allure-results/**',                allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'TestResults/**',                   allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'WillScot_ExecutiveReport_*.docx', allowEmptyArchive: true
+                }
             }
         }
+    }
 
-    } // end stages
-
-    // ── Post ─────────────────────────────────────────────────────────────────────
     post {
         always {
             script {
@@ -188,17 +226,11 @@ pipeline {
                 def icon   = status == 'SUCCESS' ? '&#9989;' : status == 'UNSTABLE' ? '&#9888;' : '&#10060;'
                 currentBuild.description = """
                     ${icon} <b>WillScot Homepage Automation</b> &nbsp;|&nbsp; Env: <b>${TEST_ENV}</b> &nbsp;|&nbsp; Build: #${env.BUILD_NUMBER}<br/>
-                    <b>17 Scenarios</b>: 14 Active &nbsp;&bull;&nbsp; 3 Skipped (@ignore) &nbsp;|&nbsp; Workers: 4 parallel<br/>
-                    <hr style='margin:3px 0'/>
-                    <b>&#128293; Smoke</b>: TC-001 &bull; TC-003 &bull; TC-005 &bull; TC-008 &bull; TC-010<br/>
-                    <b>&#128204; Navigation</b>: TC-005 &bull; TC-006 &bull; TC-007 &bull; TC-009<br/>
-                    <b>&#128230; Products</b>: TC-013 &bull; TC-014 &bull; TC-015 &bull; TC-016<br/>
-                    <b>&#128269; Quality</b>: TC-004 &bull; TC-008 &nbsp;|&nbsp; <b>&#127981; Industry</b>: TC-017<br/>
-                    <hr style='margin:3px 0'/>
                     <b>Artifacts:</b> Allure Report &bull; Videos (WebM) &bull; Screenshots &bull; Playwright Traces &bull; Word Report
                 """.stripIndent().trim()
             }
         }
+
         cleanup {
             cleanWs(
                 cleanWhenSuccess: false,
@@ -208,34 +240,3 @@ pipeline {
         }
     }
 }
-
-// ── OPTIONAL: Parallel K8s jobs by test category ─────────────────────────────
-// Uncomment the block below and replace the 'K8s Deploy' + 'Run Tests' stages
-// above to run smoke / navigation / products / quality / industry concurrently.
-// Each job needs its own deployment YAML (copy k8s/deployment.yaml, set FILTER).
-//
-// stage('Run Tests in Parallel') {
-//     parallel {
-//         stage('Smoke') {
-//             steps {
-//                 bat '"%KUBECTL%" delete job willscot-smoke -n %K8S_NAMESPACE% --ignore-not-found'
-//                 bat '"%KUBECTL%" apply -f k8s/job-smoke.yaml -n %K8S_NAMESPACE% --validate=false'
-//                 bat '"%KUBECTL%" wait --for=condition=complete job/willscot-smoke -n %K8S_NAMESPACE% --timeout=600s'
-//             }
-//         }
-//         stage('Navigation') {
-//             steps {
-//                 bat '"%KUBECTL%" delete job willscot-navigation -n %K8S_NAMESPACE% --ignore-not-found'
-//                 bat '"%KUBECTL%" apply -f k8s/job-navigation.yaml -n %K8S_NAMESPACE% --validate=false'
-//                 bat '"%KUBECTL%" wait --for=condition=complete job/willscot-navigation -n %K8S_NAMESPACE% --timeout=600s'
-//             }
-//         }
-//         stage('Products') {
-//             steps {
-//                 bat '"%KUBECTL%" delete job willscot-products -n %K8S_NAMESPACE% --ignore-not-found'
-//                 bat '"%KUBECTL%" apply -f k8s/job-products.yaml -n %K8S_NAMESPACE% --validate=false'
-//                 bat '"%KUBECTL%" wait --for=condition=complete job/willscot-products -n %K8S_NAMESPACE% --timeout=600s'
-//             }
-//         }
-//     }
-// }

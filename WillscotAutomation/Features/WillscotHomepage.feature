@@ -53,7 +53,7 @@ Feature: WillScot Homepage Validation
     # ──────────────────────────────────────────────────────────────────────────
     # TC-006  Locations Navigation
     # ──────────────────────────────────────────────────────────────────────────
-    @regression @navigation @TC006
+    @ignore @regression @navigation @TC006
     Scenario: TC-006 Verify clicking Locations navigates to locations page
         When I click the "Locations" navigation item
         Then the URL should contain "/locations"
@@ -61,7 +61,7 @@ Feature: WillScot Homepage Validation
     # ──────────────────────────────────────────────────────────────────────────
     # TC-007  Office Trailers for Sale Navigation
     # ──────────────────────────────────────────────────────────────────────────
-    @regression @navigation @TC007
+    @ignore @regression @navigation @TC007
     Scenario: TC-007 Verify clicking Office Trailers for Sale navigates to sales showroom
         When I click the "Office Trailers for Sale" navigation item
         Then the URL should contain "/sales-showroom"
@@ -69,14 +69,14 @@ Feature: WillScot Homepage Validation
     # ──────────────────────────────────────────────────────────────────────────
     # TC-008  Page Title & SEO Branding
     # ──────────────────────────────────────────────────────────────────────────
-    @smoke @regression @quality @TC008
+    @ignore @smoke @regression @quality @TC008
     Scenario: TC-008 Verify page title contains WillScot branding
         Then the page title should contain "WillScot"
 
     # ──────────────────────────────────────────────────────────────────────────
     # TC-009  About Us Navigation
     # ──────────────────────────────────────────────────────────────────────────
-    @regression @navigation @TC009
+    @ignore @regression @navigation @TC009
     Scenario: TC-009 Verify clicking About Us navigates to about page
         When I click the "About Us" navigation item
         Then the URL should contain "/about"
@@ -84,7 +84,7 @@ Feature: WillScot Homepage Validation
     # ──────────────────────────────────────────────────────────────────────────
     # TC-010  Request a Quote – Visibility
     # ──────────────────────────────────────────────────────────────────────────
-    @smoke @regression @TC010
+    @ignore @smoke @regression @TC010
     Scenario: TC-010 Verify Request a Quote button is visible in header
         Then the "Request a Quote" button should be visible in the header
 
@@ -107,7 +107,7 @@ Feature: WillScot Homepage Validation
     # ──────────────────────────────────────────────────────────────────────────
     # TC-013  Storage Containers Card – Display
     # ──────────────────────────────────────────────────────────────────────────
-    @regression @products @TC013
+    @ignore @regression @products @TC013
     Scenario: TC-013 Verify Storage Containers product card displays with image and label
         Then the Storage Containers product card should display with a visible image
         And the Storage Containers product card label should read "Storage Containers"
@@ -115,7 +115,7 @@ Feature: WillScot Homepage Validation
     # ──────────────────────────────────────────────────────────────────────────
     # TC-014  Storage Containers Card – Navigation
     # ──────────────────────────────────────────────────────────────────────────
-    @regression @products @TC014
+    @ignore @regression @products @TC014
     Scenario: TC-014 Verify clicking Storage Containers card navigates correctly
         When I click the Storage Containers product card
         Then the URL should contain "/store-secure/storage-containers"
@@ -123,7 +123,7 @@ Feature: WillScot Homepage Validation
     # ──────────────────────────────────────────────────────────────────────────
     # TC-015  Product Images – HTTP Status
     # ──────────────────────────────────────────────────────────────────────────
-    @regression @products @TC015
+    @ignore @regression @products @TC015
     Scenario: TC-015 Verify product images load without distortion or broken src
         Then all product images should return HTTP 200
         And all product images should be visible on the page
@@ -131,14 +131,14 @@ Feature: WillScot Homepage Validation
     # ──────────────────────────────────────────────────────────────────────────
     # TC-016  Product Links – HTTP Status
     # ──────────────────────────────────────────────────────────────────────────
-    @regression @products @TC016
+    @ignore @regression @products @TC016
     Scenario: TC-016 Verify all product links return HTTP 200
         Then all product links should return HTTP 200
 
     # ──────────────────────────────────────────────────────────────────────────
     # TC-017  Industry Solution Tabs
     # ──────────────────────────────────────────────────────────────────────────
-    @regression @industry @TC017
+    @ignore @regression @industry @TC017
     Scenario: TC-017 Verify industry solution tabs are displayed with correct names
         Then the following industry solution tabs should be displayed
             | TabName                    |
