@@ -69,6 +69,18 @@ public static class AllureHelper
         AttachText(html, name, "text/html", ".html");
     }
 
+    public static void AttachTrace(string tracePath, string name = "Playwright Trace")
+    {
+        if (!File.Exists(tracePath)) return;
+        Log.Debug("Trace attached: {Path}", tracePath);
+        try { AllureApi.AddAttachment(name, "application/zip", tracePath); }
+        catch
+        {
+            var bytes = File.ReadAllBytes(tracePath);
+            WriteToResultsDir(bytes, ".zip");
+        }
+    }
+
     public static void AttachVideo(string videoPath, string name = "Scenario Recording")
     {
         if (!File.Exists(videoPath)) return;

@@ -33,6 +33,12 @@ if [ "${HEADLESS}" = "false" ]; then
     echo "  Virtual display started on :99"
 fi
 
+# Number of parallel NUnit workers (default 4; override via WORKERS env var)
+WORKERS="${WORKERS:-4}"
+
+# Ensure output directories exist
+mkdir -p /app/allure-results /app/TestResults /app/logs /app/videos /app/traces
+
 # Build dotnet test arguments
 TEST_ARGS=(
     "test" "WillscotAutomation.csproj"
@@ -41,15 +47,16 @@ TEST_ARGS=(
     "--logger:trx;LogFileName=/app/TestResults/results.trx"
     "--logger:console;verbosity=normal"
     "--"
-    "NUnit.NumberOfTestWorkers=1"
+    "NUnit.NumberOfTestWorkers=${WORKERS}"
 )
 
 # Append NUnit category filter if specified
 if [ -n "${FILTER}" ]; then
-    TEST_ARGS+=("--filter" "Category=${FILTER}")
-    echo "  Applying NUnit filter: Category=${FILTER}"
+    TEST_ARGS+=("NUnit.Where=cat==${FILTER}")
+    echo "  Applying NUnit filter: cat==${FILTER}"
 fi
 
+echo "  Workers     : ${WORKERS}"
 echo "  Command: dotnet ${TEST_ARGS[*]}"
 echo "======================================================"
 
@@ -57,11 +64,18 @@ echo "======================================================"
 dotnet "${TEST_ARGS[@]}"
 EXIT_CODE=$?
 
+# Move any remaining loose video files into allure-results so kubectl cp
+# only needs to pull one directory
+if [ -d /app/videos ]; then
+    find /app/videos -name "*.webm" -exec mv -t /app/allure-results {} + 2>/dev/null || true
+fi
+
 echo ""
 echo "======================================================"
 echo "  Test run complete   Exit code : ${EXIT_CODE}"
 echo "  TRX results  : /app/TestResults/results.trx"
 echo "  Allure data  : /app/allure-results"
+echo "  Traces       : /app/TestResults/traces"
 echo "  Logs         : /app/logs"
 echo "======================================================"
 

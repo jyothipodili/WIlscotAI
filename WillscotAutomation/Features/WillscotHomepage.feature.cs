@@ -157,13 +157,11 @@ namespace WillscotAutomation.Features
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("TC-003 Verify Learn More CTA button is visible and clickable")]
         [NUnit.Framework.CategoryAttribute("smoke")]
-        [NUnit.Framework.CategoryAttribute("regression")]
         [NUnit.Framework.CategoryAttribute("TC003")]
         public async System.Threading.Tasks.Task TC_003VerifyLearnMoreCTAButtonIsVisibleAndClickable()
         {
             string[] tagsOfScenario = new string[] {
                     "smoke",
-                    "regression",
                     "TC003"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("TC-003 Verify Learn More CTA button is visible and clickable", null, tagsOfScenario, argumentsOfScenario, featureTags);
@@ -193,13 +191,11 @@ namespace WillscotAutomation.Features
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("TC-004 Verify no broken images console errors or JavaScript exceptions")]
         [NUnit.Framework.CategoryAttribute("regression")]
-        [NUnit.Framework.CategoryAttribute("quality")]
         [NUnit.Framework.CategoryAttribute("TC004")]
         public async System.Threading.Tasks.Task TC_004VerifyNoBrokenImagesConsoleErrorsOrJavaScriptExceptions()
         {
             string[] tagsOfScenario = new string[] {
                     "regression",
-                    "quality",
                     "TC004"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("TC-004 Verify no broken images console errors or JavaScript exceptions", null, tagsOfScenario, argumentsOfScenario, featureTags);
@@ -262,12 +258,6 @@ namespace WillscotAutomation.Features
                 table1.AddRow(new string[] {
                             "Products"});
                 table1.AddRow(new string[] {
-                            "Storage Containers"});
-                table1.AddRow(new string[] {
-                            "Office Trailers"});
-                table1.AddRow(new string[] {
-                            "Browse by Use"});
-                table1.AddRow(new string[] {
                             "Solutions"});
                 table1.AddRow(new string[] {
                             "About Us"});
@@ -295,7 +285,7 @@ namespace WillscotAutomation.Features
                     "TC006"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("TC-006 Verify clicking Locations navigates to locations page", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 60
+#line 57
     this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -308,11 +298,11 @@ namespace WillscotAutomation.Features
 #line 6
     await this.FeatureBackgroundAsync();
 #line hidden
-#line 61
+#line 58
         await testRunner.WhenAsync("I click the \"Locations\" navigation item", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 62
-        await testRunner.ThenAsync("the URL should contain \"/en/locations\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line 59
+        await testRunner.ThenAsync("the URL should contain \"/locations\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -331,7 +321,7 @@ namespace WillscotAutomation.Features
                     "TC007"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("TC-007 Verify clicking Office Trailers for Sale navigates to sales showroom", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 68
+#line 65
     this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -344,11 +334,11 @@ namespace WillscotAutomation.Features
 #line 6
     await this.FeatureBackgroundAsync();
 #line hidden
-#line 69
+#line 66
         await testRunner.WhenAsync("I click the \"Office Trailers for Sale\" navigation item", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 70
-        await testRunner.ThenAsync("the URL should contain \"/en/sales-showroom\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line 67
+        await testRunner.ThenAsync("the URL should contain \"/sales-showroom\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -369,7 +359,7 @@ namespace WillscotAutomation.Features
                     "TC008"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("TC-008 Verify page title contains WillScot branding", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 76
+#line 73
     this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -382,7 +372,7 @@ namespace WillscotAutomation.Features
 #line 6
     await this.FeatureBackgroundAsync();
 #line hidden
-#line 77
+#line 74
         await testRunner.ThenAsync("the page title should contain \"WillScot\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -402,7 +392,7 @@ namespace WillscotAutomation.Features
                     "TC009"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("TC-009 Verify clicking About Us navigates to about page", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 83
+#line 80
     this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -415,11 +405,11 @@ namespace WillscotAutomation.Features
 #line 6
     await this.FeatureBackgroundAsync();
 #line hidden
-#line 84
+#line 81
         await testRunner.WhenAsync("I click the \"About Us\" navigation item", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 85
-        await testRunner.ThenAsync("the URL should contain \"/en/about\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line 82
+        await testRunner.ThenAsync("the URL should contain \"/about\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -438,7 +428,7 @@ namespace WillscotAutomation.Features
                     "TC010"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("TC-010 Verify Request a Quote button is visible in header", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 91
+#line 88
     this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -451,7 +441,7 @@ namespace WillscotAutomation.Features
 #line 6
     await this.FeatureBackgroundAsync();
 #line hidden
-#line 92
+#line 89
         await testRunner.ThenAsync("the \"Request a Quote\" button should be visible in the header", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -471,7 +461,7 @@ namespace WillscotAutomation.Features
                     "TC011"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("TC-011 Verify clicking Request a Quote opens request quote page in same tab", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 98
+#line 95
     this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -484,11 +474,11 @@ namespace WillscotAutomation.Features
 #line 6
     await this.FeatureBackgroundAsync();
 #line hidden
-#line 99
+#line 96
         await testRunner.WhenAsync("I click the \"Request a Quote\" button in the header", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 100
-        await testRunner.ThenAsync("the URL should contain \"/en/request-quote\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line 97
+        await testRunner.ThenAsync("the URL should contain \"/request-quote\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -507,7 +497,7 @@ namespace WillscotAutomation.Features
                     "TC012"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("TC-012 Verify Request Support button navigates to request service page", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 106
+#line 103
     this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -520,11 +510,11 @@ namespace WillscotAutomation.Features
 #line 6
     await this.FeatureBackgroundAsync();
 #line hidden
-#line 107
+#line 104
         await testRunner.WhenAsync("I click the \"Request Support\" button", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 108
-        await testRunner.ThenAsync("the URL should contain \"/en/request-service\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line 105
+        await testRunner.ThenAsync("the URL should contain \"/request-service\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -543,7 +533,7 @@ namespace WillscotAutomation.Features
                     "TC013"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("TC-013 Verify Storage Containers product card displays with image and label", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 114
+#line 111
     this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -556,10 +546,10 @@ namespace WillscotAutomation.Features
 #line 6
     await this.FeatureBackgroundAsync();
 #line hidden
-#line 115
+#line 112
         await testRunner.ThenAsync("the Storage Containers product card should display with a visible image", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 116
+#line 113
         await testRunner.AndAsync("the Storage Containers product card label should read \"Storage Containers\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
@@ -579,7 +569,7 @@ namespace WillscotAutomation.Features
                     "TC014"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("TC-014 Verify clicking Storage Containers card navigates correctly", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 122
+#line 119
     this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -592,11 +582,11 @@ namespace WillscotAutomation.Features
 #line 6
     await this.FeatureBackgroundAsync();
 #line hidden
-#line 123
+#line 120
         await testRunner.WhenAsync("I click the Storage Containers product card", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 124
-        await testRunner.ThenAsync("the URL should contain \"/en/store-secure/storage-containers\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line 121
+        await testRunner.ThenAsync("the URL should contain \"/store-secure/storage-containers\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -615,7 +605,7 @@ namespace WillscotAutomation.Features
                     "TC015"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("TC-015 Verify product images load without distortion or broken src", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 130
+#line 127
     this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -628,10 +618,10 @@ namespace WillscotAutomation.Features
 #line 6
     await this.FeatureBackgroundAsync();
 #line hidden
-#line 131
+#line 128
         await testRunner.ThenAsync("all product images should return HTTP 200", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 132
+#line 129
         await testRunner.AndAsync("all product images should be visible on the page", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
@@ -651,7 +641,7 @@ namespace WillscotAutomation.Features
                     "TC016"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("TC-016 Verify all product links return HTTP 200", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 138
+#line 135
     this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -664,7 +654,7 @@ namespace WillscotAutomation.Features
 #line 6
     await this.FeatureBackgroundAsync();
 #line hidden
-#line 139
+#line 136
         await testRunner.ThenAsync("all product links should return HTTP 200", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -684,7 +674,7 @@ namespace WillscotAutomation.Features
                     "TC017"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("TC-017 Verify industry solution tabs are displayed with correct names", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 145
+#line 142
     this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -711,7 +701,7 @@ namespace WillscotAutomation.Features
                             "Manufacturing"});
                 table2.AddRow(new string[] {
                             "Healthcare & Entertainment"});
-#line 146
+#line 143
         await testRunner.ThenAsync("the following industry solution tabs should be displayed", ((string)(null)), table2, "Then ");
 #line hidden
             }

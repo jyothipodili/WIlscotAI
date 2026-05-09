@@ -10,8 +10,8 @@ spec:
   activeDeadlineSeconds: 1800
   # No retry — test failures should fail the job immediately, not retry
   backoffLimit: 0
-  # Auto-delete Job + pods 10 minutes after completion
-  ttlSecondsAfterFinished: 600
+  # Auto-delete 30 min after completion — gives Jenkins time to kubectl cp artifacts
+  ttlSecondsAfterFinished: 1800
   template:
     metadata:
       labels:
@@ -35,6 +35,8 @@ spec:
               value: "false"
             - name: FILTER
               value: ""
+            - name: WORKERS
+              value: "4"
 
           resources:
             requests:

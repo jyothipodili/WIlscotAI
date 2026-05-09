@@ -13,6 +13,7 @@ public sealed class PlaywrightContext : IAsyncDisposable
     public IAPIRequestContext ApiContext   { get; private set; } = null!;
     public LogCollector   LogCollector     { get; private set; } = null!;
     public string?        VideoPath        { get; private set; }
+    public string?        TracePath        { get; private set; }
 
     private bool _pageContextClosed;
 
@@ -37,6 +38,13 @@ public sealed class PlaywrightContext : IAsyncDisposable
 
         // Attach log collectors immediately so no events are missed
         LogCollector = new LogCollector(Page);
+
+        // Start Playwright trace recording (screenshots + DOM snapshots per action)
+        await BrowserContext.Tracing.StartAsync(new TracingStartOptions
+        {
+            Screenshots = true,
+            Snapshots   = true
+        });
     }
 
     // Closes page + browser context, finalizing the recorded video.
@@ -49,6 +57,21 @@ public sealed class PlaywrightContext : IAsyncDisposable
         try { if (Page?.Video != null) VideoPath = await Page.Video.PathAsync(); } catch { /* swallow */ }
         try { if (ApiContext    != null) await ApiContext.DisposeAsync();    } catch { /* swallow */ }
         try { if (Page          != null) await Page.CloseAsync();            } catch { /* swallow */ }
+
+        // Stop trace before closing context so the zip is fully written
+        try
+        {
+            if (BrowserContext != null)
+            {
+                var traceDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "traces");
+                Directory.CreateDirectory(traceDir);
+                var traceFile = Path.Combine(traceDir, $"trace-{Guid.NewGuid():N}.zip");
+                await BrowserContext.Tracing.StopAsync(new TracingStopOptions { Path = traceFile });
+                TracePath = traceFile;
+            }
+        }
+        catch { /* swallow */ }
+
         // Video is finalized when the browser context closes.
         try { if (BrowserContext != null) await BrowserContext.CloseAsync(); } catch { /* swallow */ }
 

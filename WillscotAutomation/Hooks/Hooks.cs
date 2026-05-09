@@ -140,7 +140,7 @@ public sealed partial class Hooks(IObjectContainer container, ScenarioContext sc
 
         await TrackZephyrScenarioAsync(playwrightContext);
 
-        // Finalize video (closes page + browser context) BEFORE full dispose so the
+        // Finalize video + trace (closes page + browser context) BEFORE full dispose so the
         // Allure test-case lifecycle is still open and can record the attachment in JSON.
         var videoPath = await playwrightContext.FinalizeVideoAsync();
         if (videoPath != null && File.Exists(videoPath))
@@ -159,7 +159,24 @@ public sealed partial class Hooks(IObjectContainer container, ScenarioContext sc
             }
         }
 
-        // Close browser + playwright now that video is attached
+        var tracePath = playwrightContext.TracePath;
+        if (tracePath != null && File.Exists(tracePath))
+        {
+            var safeTitle = string.Concat(scenarioContext.ScenarioInfo.Title
+                .Split(Path.GetInvalidFileNameChars())).Replace(" ", "_");
+            var namedTrace = Path.Combine(Path.GetDirectoryName(tracePath)!, $"{safeTitle}.zip");
+            try
+            {
+                File.Move(tracePath, namedTrace, overwrite: true);
+                AllureHelper.AttachTrace(namedTrace, $"Trace — {scenarioContext.ScenarioInfo.Title}");
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "Could not attach trace for {Title}.", scenarioContext.ScenarioInfo.Title);
+            }
+        }
+
+        // Close browser + playwright now that video and trace are attached
         await playwrightContext.DisposeAsync();
     }
 
