@@ -48,14 +48,25 @@ pipeline {
                     bat 'dotnet restore --locked-mode 2>nul || dotnet restore'
                     bat 'dotnet build --no-restore --configuration Release'
                 }
-                bat "docker build -t %IMAGE_NAME%:latest ."
+                // Build image DIRECTLY inside Minikube's Docker daemon so the
+                // Kubernetes kubelet sees it immediately (no image load needed).
+                bat '''
+                    powershell -NonInteractive -ExecutionPolicy Bypass -Command ^
+                    "& '%MINIKUBE%' docker-env --shell powershell | Invoke-Expression; ^
+                     docker build -t willscot-automation:latest .; ^
+                     Write-Host 'Image built inside Minikube Docker daemon'"
+                '''
             }
         }
 
-        // ── 3. Load image into local Minikube ────────────────────────────────────
-        stage('Minikube Image Load') {
+        // ── 3. Verify image is visible to Kubernetes ─────────────────────────────
+        stage('Verify Image') {
             steps {
-                bat '"%MINIKUBE%" image load willscot-automation:latest'
+                bat '''
+                    powershell -NonInteractive -ExecutionPolicy Bypass -Command ^
+                    "& '%MINIKUBE%' docker-env --shell powershell | Invoke-Expression; ^
+                     docker images willscot-automation:latest"
+                '''
             }
         }
 
