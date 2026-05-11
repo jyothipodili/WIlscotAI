@@ -81,20 +81,8 @@ pipeline {
             }
         }
 
-        // ── 4. Allure Report ─────────────────────────────────────────────────────
-        stage('Allure Report') {
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                    allure([
-                        reportBuildPolicy: 'ALWAYS',
-                        results          : [[path: "${ALLURE_RESULTS}"]],
-                        commandline      : 'allure'
-                    ])
-                }
-            }
-        }
-
-        // ── 5. Word Report ───────────────────────────────────────────────────────
+        // ── 4. Word Report ───────────────────────────────────────────────────────
+        // Runs before Allure so allure-results JSON files are still intact
         stage('Word Report') {
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
@@ -107,6 +95,19 @@ pipeline {
                             --build %BUILD_NUMBER% ^
                             --env %TEST_ENV%
                     '''
+                }
+            }
+        }
+
+        // ── 5. Allure Report ─────────────────────────────────────────────────────
+        stage('Allure Report') {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                    allure([
+                        reportBuildPolicy: 'ALWAYS',
+                        results          : [[path: "${ALLURE_RESULTS}"]],
+                        commandline      : 'allure'
+                    ])
                 }
             }
         }
