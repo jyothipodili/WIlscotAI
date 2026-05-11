@@ -58,14 +58,15 @@ pipeline {
                         mkdir "traces"
                     '''
 
-                    // Run tests inside Docker; volumes land artifacts on host directly
+                    // Run tests inside Docker; mount the actual bin-dir paths where
+                    // the Allure NUnit adapter writes (relative to test CWD)
                     def rc = bat(
                         script: '''
                             docker run --rm ^
                                 -e TEST_ENV=%TEST_ENV% ^
                                 -e HEADLESS=true ^
                                 -e BROWSER=chromium ^
-                                -v "%WORKSPACE%/allure-results:/app/allure-results" ^
+                                -v "%WORKSPACE%/allure-results:/app/bin/Release/net8.0/allure-results" ^
                                 -v "%WORKSPACE%/TestResults:/app/TestResults" ^
                                 -v "%WORKSPACE%/videos:/app/bin/Release/net8.0/videos" ^
                                 -v "%WORKSPACE%/traces:/app/bin/Release/net8.0/traces" ^
