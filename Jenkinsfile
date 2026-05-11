@@ -47,8 +47,12 @@ pipeline {
                     bat '''
                         if exist "allure-results" rd /s /q "allure-results"
                         if exist "TestResults"    rd /s /q "TestResults"
+                        if exist "videos"         rd /s /q "videos"
+                        if exist "traces"         rd /s /q "traces"
                         mkdir "allure-results"
                         mkdir "TestResults"
+                        mkdir "videos"
+                        mkdir "traces"
                     '''
 
                     // Run tests inside Docker; volumes land artifacts on host directly
@@ -60,6 +64,8 @@ pipeline {
                                 -e BROWSER=chromium ^
                                 -v "%WORKSPACE%/allure-results:/app/allure-results" ^
                                 -v "%WORKSPACE%/TestResults:/app/TestResults" ^
+                                -v "%WORKSPACE%/videos:/app/bin/Release/net8.0/videos" ^
+                                -v "%WORKSPACE%/traces:/app/bin/Release/net8.0/traces" ^
                                 %IMAGE_NAME%:latest
                         ''',
                         returnStatus: true
@@ -90,8 +96,10 @@ pipeline {
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
                     bat '''
-                        pip install python-docx Pillow --quiet --disable-pip-version-check 2>nul || echo pip install failed — Python may not be on PATH
-                        python scripts\\generate_word_report.py ^
+                        set PYTHON=C:\Users\santhi.podili\AppData\Local\Programs\Python\Python313\python.exe
+                        set PIP=C:\Users\santhi.podili\AppData\Local\Programs\Python\Python313\Scripts\pip.exe
+                        "%PIP%" install python-docx Pillow --quiet --disable-pip-version-check
+                        "%PYTHON%" scripts\\generate_word_report.py ^
                             --allure-results allure-results ^
                             --trx TestResults\\results.trx ^
                             --output "WillScot_ExecutiveReport_Build%BUILD_NUMBER%.docx" ^
@@ -109,6 +117,8 @@ pipeline {
                     archiveArtifacts artifacts: 'allure-report/**',                allowEmptyArchive: true
                     archiveArtifacts artifacts: 'allure-results/**',               allowEmptyArchive: true
                     archiveArtifacts artifacts: 'TestResults/**',                  allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'videos/**',                       allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'traces/**',                       allowEmptyArchive: true
                     archiveArtifacts artifacts: 'WillScot_ExecutiveReport_*.docx', allowEmptyArchive: true
                 }
             }
