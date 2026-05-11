@@ -10,6 +10,9 @@ pipeline {
 
         ALLURE_RESULTS              = 'allure-results'
         TEST_RESULTS_DIR            = 'TestResults'
+
+        PYTHON_EXE = 'C:\\Users\\santhi.podili\\AppData\\Local\\Programs\\Python\\Python313\\python.exe'
+        PIP_EXE    = 'C:\\Users\\santhi.podili\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\pip.exe'
     }
 
     options {
@@ -96,10 +99,8 @@ pipeline {
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
                     bat '''
-                        set PYTHON=C:\Users\santhi.podili\AppData\Local\Programs\Python\Python313\python.exe
-                        set PIP=C:\Users\santhi.podili\AppData\Local\Programs\Python\Python313\Scripts\pip.exe
-                        "%PIP%" install python-docx Pillow --quiet --disable-pip-version-check
-                        "%PYTHON%" scripts\\generate_word_report.py ^
+                        "%PIP_EXE%" install python-docx Pillow --quiet --disable-pip-version-check
+                        "%PYTHON_EXE%" scripts\\generate_word_report.py ^
                             --allure-results allure-results ^
                             --trx TestResults\\results.trx ^
                             --output "WillScot_ExecutiveReport_Build%BUILD_NUMBER%.docx" ^
