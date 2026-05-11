@@ -287,15 +287,12 @@ def build_document(results: list[dict], summary: dict, trx: dict | None,
     flow = doc.add_paragraph()
     flow.style = "List Bullet"
     steps = [
-        ("Checkout",          "Source code is cloned from Git SCM."),
-        ("Build & Package",   ".NET 8 project is restored, compiled in Release mode, and baked into a Docker image."),
-        ("Minikube Image Load","Docker image is loaded into local Minikube (no registry push needed)."),
-        ("K8s Deploy",        "A Kubernetes Job is created in the 'willscot' namespace running the test container."),
-        ("Run Tests (K8s)",   f"Tests execute inside the pod — {summary['total']} BDD scenarios (Playwright + Reqnroll + NUnit) with 4 parallel workers."),
-        ("Collect Artifacts", "kubectl cp copies allure-results (with embedded videos, screenshots, traces) and TestResults from the pod to the Jenkins workspace."),
-        ("Allure Report",     "The Allure Jenkins plugin generates an HTML report published on the build page."),
-        ("Word Report",       "This document is auto-generated from Allure JSON + TRX data."),
-        ("Archive Evidence",  "All artifacts are archived: Allure report, raw results, TRX file, and this Word report."),
+        ("Checkout",          "Source code is cloned from Git SCM (auto-triggered on every push via SCM polling)."),
+        ("Build Docker Image","The .NET 8 + Playwright test project is baked into a Docker image (fully cached on rebuild)."),
+        ("Run Tests",         f"{summary['total']} BDD scenarios run inside the Docker container — Playwright + Reqnroll + NUnit with 4 parallel workers. Videos, screenshots and traces are volume-mounted directly to the Jenkins workspace."),
+        ("Word Report",       "This document is auto-generated from Allure JSON result files + TRX data."),
+        ("Allure Report",     "The Allure Jenkins plugin generates an interactive HTML report published on the build page."),
+        ("Archive Evidence",  "All artifacts archived: Allure HTML report, raw results, videos (.webm), Playwright traces, TRX file, and this Word report."),
     ]
     for i, (stage, desc) in enumerate(steps, 1):
         p = doc.add_paragraph(style="List Number")
