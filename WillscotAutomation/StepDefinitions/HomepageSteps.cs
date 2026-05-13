@@ -12,7 +12,7 @@ namespace WillscotAutomation.StepDefinitions;
 public sealed class HomepageSteps
 {
     private readonly PlaywrightContext _ctx;
-    private readonly HomePagehomePage;
+    private readonly HomePage _homePage;
 
     // Stored during Background navigation so TC-001 can read elapsed time.
     private DateTime _navigationStartUtc;
